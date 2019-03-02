@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!--
+Created By NadavTasher
+https://github.com/NadavTasher/WebAppBase/
+-->
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="description" content="AppDescription">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#FFFFFF"/>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+    <meta name="apple-mobile-web-app-title" content="AppName"/>
+    <link rel="apple-touch-icon" href="images/icon_apple.png"/>
+    <link rel="icon" href="images/icon.png"/>
+    <link rel="manifest" href="resources/manifest.json"/>
+    <link rel="stylesheet" href="css/app.css"/>
+    <script type="text/javascript" src="javascript/accounts.js"></script>
+    <script type="text/javascript" src="javascript/app.js"></script>
+    <script type="text/javascript" src="javascript/utils.js"></script>
+    <title>AppName</title>
+    <noscript></noscript>
+</head>
+<body onload="worker();accounts(load);">
+<div>
+    <div id="login">
+        <p>Login To AppName</p>
+        <div>
+            <input id="login-name" type="text" placeholder="Name"/>
+            <input id="login-password" type="password" placeholder="Password"/>
+            <button onclick="login(get('login-name').value,get('login-password').value)">Login</button>
+        </div>
+        <div>
+            <p style="font-size: larger">Don't have an account?</p>
+            <button onclick="view('register')">Register</button>
+        </div>
+    </div>
+    <div id="register">
+        <p>Register To AppName</p>
+        <div>
+            <input id="register-name" type="text" placeholder="Name"/>
+            <input id="register-password" type="password" placeholder="Password"/>
+            <button onclick="register(get('register-name').value,get('register-password').value)">Register</button>
+        </div>
+        <div>
+            <p style="font-size: larger">Already have an account?</p>
+            <button onclick="view('login')">Login</button>
+        </div>
+    </div>
+    <!--Your App Body-->
+</div>
+</body>
+</html>
