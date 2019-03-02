@@ -7,7 +7,6 @@ echo json_encode($result);
 
 function main()
 {
-    echo generateRandom(128);
     if (isset($_POST["action"])) {
         $action = $_POST["action"];
         switch ($action) {
@@ -34,15 +33,20 @@ function filter($source)
 
 function generateRandom($length)
 {
-    return substr(str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"), 0, $length);
+    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
+    if ($length > 0) {
+        return $current . generateRandom($length - 1);
+    }
+    return "";
 }
 
 function login()
 {
     global $result, $database;
-    function generateCertificate(){
+    function generateCertificate()
+    {
         global $database;
-        $random=generateRandom(28);
+        $random = generateRandom(28);
         foreach ($database->accounts as $account) {
             foreach ($account->certificates as $certificate) {
                 if ($certificate === $random) return generateCertificate();
@@ -51,16 +55,18 @@ function login()
         return $random;
     }
 
-    foreach ($database->accounts as $account){
+    foreach ($database->accounts as $account) {
 
     }
 }
 
-function register(){
-    global $result,$database;
+function register()
+{
+    global $result, $database;
 
 
-    function generateSalt(){
+    function generateSalt()
+    {
         return generateRandom(32);
     }
 
@@ -69,5 +75,5 @@ function register(){
 function save()
 {
     global $database;
-    file_put_contents(json_encode($database),DATABASE);
+    file_put_contents(json_encode($database), DATABASE);
 }
