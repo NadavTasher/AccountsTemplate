@@ -1,36 +1,108 @@
 const certificateCookie = "certificate";
-let postLogin;
+let success, failure;
 
 function accounts(callback) {
-    postLogin = callback;
+    view("accounts");
+    success = () => {
+        hide("accounts");
+        callback();
+    };
+    failure = () => view("login");
     if (hasCookie(certificateCookie))
-
-        postLogin();
+        verify(success, failure);
     else
         view("login");
 }
 
-function verify(callback){
-
-}
-
-function login(name, password) {
+function verify(success, failure) {
     let form = new FormData();
-    form.append("action", "login");
-    form.append("name", name);
-    form.append("password", password);
+    form.append("action", "verify");
+    form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
     fetch("php/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
         response.text().then((result) => {
-            console.log(result.json());
+            let json = JSON.parse(result);
+            console.log(json);
+            if (json.hasOwnProperty("errors")) {
+                if (json.hasOwnProperty("verify")) {
+                    if (json.verify.hasOwnProperty("name")) {
+                        success();
+                    } else {
+                        failure();
+                    }
+                } else {
+                    failure();
+                }
+            }
+        });
+    });
+}
+
+function login(name, password) {
+    let form = new FormData();
+    form.append("action", "login");
+    form.append("login", JSON.stringify({name: name, password: password}));
+    fetch("php/accounts.php", {
+        method: "post",
+        body: form
+    }).then(response => {
+        response.text().then((result) => {
+            let json = JSON.parse(result);
+            if (json.hasOwnProperty("errors")) {
+                if (json.hasOwnProperty("login")) {
+                    if (json.login.hasOwnProperty("certificate")) {
+                        pushCookie(certificateCookie, json.login.certificate);
+                        window.location.reload();
+                    } else {
+                        if (json.errors.hasOwnProperty("login")) {
+                            alert(json.errors.login);
+                        }
+                    }
+                } else {
+                    if (json.errors.hasOwnProperty("login")) {
+                        alert(json.errors.login);
+                    }
+                }
+            }
         });
     });
 }
 
 function register(name, password) {
-
+    let form = new FormData();
+    form.append("action", "register");
+    form.append("register", JSON.stringify({name: name, password: password}));
+    fetch("php/accounts.php", {
+        method: "post",
+        body: form
+    }).then(response => {
+        response.text().then((result) => {
+            let json = JSON.parse(result);
+            if (json.hasOwnProperty("errors")) {
+                if (json.hasOwnProperty("register")) {
+                    if (json.register.hasOwnProperty("success")) {
+                        if (json.register.success === true) {
+                            login(name, password);
+                        } else {
+                            if (json.errors.hasOwnProperty("registration")) {
+                                alert(json.errors.registration);
+                            }
+                        }
+                    } else {
+                        if (json.errors.hasOwnProperty("registration")) {
+                            alert(json.errors.registration);
+                        }
+                    }
+                } else {
+                    if (json.errors.hasOwnProperty("registration")) {
+                        alert(json.errors.registration);
+                    }
+                }
+            }
+        });
+    });
 }
 
 function pushCookie(name, value) {
