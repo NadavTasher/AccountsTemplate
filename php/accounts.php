@@ -164,5 +164,5 @@ function register($name, $password)
 function save()
 {
     global $database;
-    file_put_contents( DATABASE,json_encode($database));
+    file_put_contents(DATABASE, json_encode($database));
 }
