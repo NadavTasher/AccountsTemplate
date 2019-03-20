@@ -24,7 +24,6 @@ function verify(success, failure) {
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            console.log(json);
             if (json.hasOwnProperty("errors")) {
                 if (json.hasOwnProperty("verify")) {
                     if (json.verify.hasOwnProperty("name")) {
