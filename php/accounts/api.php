@@ -1,5 +1,5 @@
 <?php
-const DATABASE = "../../files/accounts/database.json";
+define("DATABASE", dirname(__FILE__) . "/../../files/accounts/database.json");
 $database = json_decode(file_get_contents(DATABASE));
 $result = new stdClass();
 $result->errors = new stdClass();
