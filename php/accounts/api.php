@@ -3,8 +3,6 @@ const DATABASE = "../files/accounts/database.json";
 $database = json_decode(file_get_contents(DATABASE));
 $result = new stdClass();
 $result->errors = new stdClass();
-main();
-echo json_encode($result);
 
 function main()
 {
@@ -62,11 +60,11 @@ function verify($certificate)
             if ($current === $certificate) {
                 $result->verify = new stdClass();
                 $result->verify->name = $account->name;
-                return true;
+                return $result->id;
             }
         }
     }
-    return false;
+    return null;
 }
 
 function login($name, $password)

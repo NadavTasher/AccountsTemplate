@@ -18,7 +18,7 @@ function verify(success, failure) {
     let form = new FormData();
     form.append("action", "verify");
     form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
-    fetch("php/accounts.php", {
+    fetch("php/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
@@ -44,7 +44,7 @@ function login(name, password) {
     let form = new FormData();
     form.append("action", "login");
     form.append("login", JSON.stringify({name: name, password: password}));
-    fetch("php/accounts.php", {
+    fetch("php/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
@@ -74,7 +74,7 @@ function register(name, password) {
     let form = new FormData();
     form.append("action", "register");
     form.append("register", JSON.stringify({name: name, password: password}));
-    fetch("php/accounts.php", {
+    fetch("php/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
