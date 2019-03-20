@@ -16,8 +16,7 @@ function accounts(callback) {
 
 function verify(success, failure) {
     let form = new FormData();
-    form.append("action", "verify");
-    form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
+    fillInformation(form);
     fetch("php/accounts/accounts.php", {
         method: "post",
         body: form
@@ -102,6 +101,13 @@ function register(name, password) {
             }
         });
     });
+}
+
+function fillInformation(form) {
+    if (hasCookie(certificateCookie)) {
+        form.append("action", "verify");
+        form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
+    }
 }
 
 function pushCookie(name, value) {
