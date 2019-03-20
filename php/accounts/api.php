@@ -4,7 +4,7 @@ $database = json_decode(file_get_contents(DATABASE));
 $result = new stdClass();
 $result->errors = new stdClass();
 
-function main()
+function init()
 {
     global $result;
     if (isset($_POST["action"])) {

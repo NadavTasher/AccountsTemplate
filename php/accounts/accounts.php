@@ -1,4 +1,4 @@
 <?php
 include "api.php";
-main();
+init();
 echo json_encode($result);
