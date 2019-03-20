@@ -26,13 +26,14 @@ function main()
                     break;
                 case "verify":
                     if (isset($parameters->certificate))
-                        verify($parameters->certificate);
+                        return verify($parameters->certificate);
                     else
                         $result->errors->verification = "Missing info";
                     break;
             }
         }
     }
+    return null;
 }
 
 function filter($source)
