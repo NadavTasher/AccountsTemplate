@@ -37,6 +37,7 @@ form {
     justify-content: space-between;
     align-self: stretch;
     align-items: center;
+    min-height: fit-content;
 }
 
 p,
