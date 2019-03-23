@@ -20,7 +20,7 @@ body > div {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 96vw;
+    width: 100%;
 }
 
 html,
@@ -62,15 +62,15 @@ select,
 option,
 button {
     transition-duration: 0.4s;
-    background-color: #333;
+    background-color: #ddddee;
     border-radius: 1vh;
     border-color: transparent;
-    color: #FFF;
+    color: #333;
 }
 
 input:hover,
 select:hover,
 option:hover,
 button:hover {
-    background-color: #111;
+    background-color: #bbbbcc;
 }
