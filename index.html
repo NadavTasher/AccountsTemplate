@@ -17,7 +17,7 @@ https://github.com/NadavTasher/WebAppBase/
     <link rel="icon" href="images/icon.png"/>
     <link rel="manifest" href="resources/manifest.json"/>
     <link rel="stylesheet" href="css/app.css"/>
-    <script type="text/javascript" src="javascript/accounts.js"></script>
+    <script type="text/javascript" src="javascript/accounts/accounts.js"></script>
     <script type="text/javascript" src="javascript/app.js"></script>
     <script type="text/javascript" src="javascript/utils.js"></script>
     <title>AppName</title>
@@ -37,6 +37,9 @@ https://github.com/NadavTasher/WebAppBase/
                 <p style="font-size: larger">Don't have an account?</p>
                 <button onclick="view('register')">Register</button>
             </div>
+            <div>
+                <button onclick="force()">Continue Without Login</button>
+            </div>
         </div>
         <div id="register">
             <p>Register To AppName</p>
@@ -48,6 +51,9 @@ https://github.com/NadavTasher/WebAppBase/
             <div>
                 <p style="font-size: larger">Already have an account?</p>
                 <button onclick="view('login')">Login</button>
+            </div>
+            <div>
+                <button onclick="force()">Continue Without Registration</button>
             </div>
         </div>
     </div>

@@ -1,5 +1,5 @@
 const certificateCookie = "certificate";
-let success, failure;
+let success, failure, loggedIn = false;
 
 function accounts(callback) {
     view("accounts");
@@ -14,9 +14,25 @@ function accounts(callback) {
         view("login");
 }
 
+
+function fillForm(form = new FormData()) {
+    if (hasCookie(certificateCookie)) {
+        form.append("action", "verify");
+        form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
+    }
+    return form;
+}
+
+function force() {
+    success();
+}
+
+function isLoggedIn() {
+    return loggedIn;
+}
+
 function verify(success, failure) {
-    let form = new FormData();
-    fillInformation(form);
+    let form = fillForm();
     fetch("php/accounts/accounts.php", {
         method: "post",
         body: form
@@ -26,6 +42,7 @@ function verify(success, failure) {
             if (json.hasOwnProperty("errors")) {
                 if (json.hasOwnProperty("verify")) {
                     if (json.verify.hasOwnProperty("name")) {
+                        loggedIn = true;
                         success();
                     } else {
                         failure();
@@ -101,13 +118,6 @@ function register(name, password) {
             }
         });
     });
-}
-
-function fillInformation(form) {
-    if (hasCookie(certificateCookie)) {
-        form.append("action", "verify");
-        form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
-    }
 }
 
 function pushCookie(name, value) {
