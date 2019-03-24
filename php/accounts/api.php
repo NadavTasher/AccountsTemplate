@@ -1,5 +1,7 @@
 <?php
 const MINIMUM_PASSWORD_LENGTH = 8;
+const LOCKOUT_TIME = 5 * 60;
+const LOCKOUT_ATTEMPTS = 5;
 
 define("DATABASE", dirname(__FILE__) . "/../../files/accounts/database.json");
 $database = json_decode(file_get_contents(DATABASE));
@@ -103,29 +105,44 @@ function login($name, $password)
         return $random;
     }
 
-    function password($name, $password)
+    function password($account, $password)
     {
-        global $database;
-        foreach ($database->accounts as $account) {
-            if ($account->name === $name) {
-                return hash("sha256", $account->saltA . $password . $account->saltB) === $account->hashed;
-            }
+        return hash("sha256", $account->saltA . $password . $account->saltB) === $account->hashed;
+    }
+
+    function lockout($account)
+    {
+        return isset($account->lockout->time)&&$account->lockout->time > time();
+    }
+
+    function lock($account)
+    {
+        if (!isset($account->lockout->attempts)) $account->lockout->attempts = 0;
+        $account->lockout->attempts++;
+        if ($account->lockout->attempts >= LOCKOUT_ATTEMPTS) {
+            $account->lockout->attempts = 0;
+            $account->lockout->time = time() + LOCKOUT_TIME;
         }
-        return false;
+        save();
     }
 
     $accountFound = false;
     foreach ($database->accounts as $account) {
         if ($account->name === $name) {
             $accountFound = true;
-            if (password($name, $password)) {
-                $certificate = certificate();
-                array_push($account->certificates, $certificate);
-                save();
-                $result->login = new stdClass();
-                $result->login->certificate = $certificate;
+            if (!lockout($account)) {
+                if (password($account, $password)) {
+                    $certificate = certificate();
+                    $result->login = new stdClass();
+                    $result->login->certificate = $certificate;
+                    array_push($account->certificates, $certificate);
+                    save();
+                } else {
+                    lock($account);
+                    $result->errors->login = "Incorrect password";
+                }
             } else {
-                $result->errors->login = "Incorrect password";
+                $result->errors->login = "Account locked";
             }
         }
     }
@@ -169,13 +186,14 @@ function register($name, $password)
             $account->id = id();
             $account->name = $name;
             $account->certificates = array();
+            $account->lockout = new stdClass();
             $account->saltA = salt();
             $account->saltB = salt();
             $account->hashed = hash("sha256", $account->saltA . $password . $account->saltB);
-            array_push($database->accounts, $account);
-            save();
             $result->register = new stdClass();
             $result->register->success = true;
+            array_push($database->accounts, $account);
+            save();
         } else {
             $result->errors->registration = "Password too short";
         }

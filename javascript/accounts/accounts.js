@@ -56,6 +56,11 @@ function verify(success, failure) {
 }
 
 function login(name, password) {
+
+    function error(error){
+        get("login-error").innerText=error;
+    }
+
     let form = new FormData();
     form.append("action", "login");
     form.append("login", JSON.stringify({name: name, password: password}));
@@ -72,12 +77,12 @@ function login(name, password) {
                         window.location.reload();
                     } else {
                         if (json.errors.hasOwnProperty("login")) {
-                            alert(json.errors.login);
+                            error(json.errors.login);
                         }
                     }
                 } else {
                     if (json.errors.hasOwnProperty("login")) {
-                        alert(json.errors.login);
+                        error(json.errors.login);
                     }
                 }
             }
@@ -86,6 +91,11 @@ function login(name, password) {
 }
 
 function register(name, password) {
+
+    function error(error){
+        get("register-error").innerText=error;
+    }
+
     let form = new FormData();
     form.append("action", "register");
     form.append("register", JSON.stringify({name: name, password: password}));
@@ -102,12 +112,12 @@ function register(name, password) {
                             login(name, password);
                         } else {
                             if (json.errors.hasOwnProperty("registration")) {
-                                alert(json.errors.registration);
+                                error(json.errors.registration);
                             }
                         }
                     } else {
                         if (json.errors.hasOwnProperty("registration")) {
-                            alert(json.errors.registration);
+                            error(json.errors.registration);
                         }
                     }
                 } else {
