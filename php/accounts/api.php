@@ -1,6 +1,9 @@
 <?php
+const MINIMUM_PASSWORD_LENGTH = 8;
+
 define("DATABASE", dirname(__FILE__) . "/../../files/accounts/database.json");
 $database = json_decode(file_get_contents(DATABASE));
+
 $result = new stdClass();
 $result->errors = new stdClass();
 
@@ -53,11 +56,12 @@ function random($length)
     return "";
 }
 
-function user($userID){
+function user($userID)
+{
     global $database;
     foreach ($database->accounts as $account) {
-        if($account->id === $userID){
-            $user=$account;
+        if ($account->id === $userID) {
+            $user = $account;
             unset($user->saltA);
             unset($user->saltB);
             unset($user->hashed);
@@ -86,24 +90,25 @@ function verify($certificate)
 function login($name, $password)
 {
     global $result, $database;
-    function generateCertificate()
+
+    function certificate()
     {
         global $database;
-        $random = random(28);
+        $random = random(64);
         foreach ($database->accounts as $account) {
             foreach ($account->certificates as $certificate) {
-                if ($certificate === $random) return generateCertificate();
+                if ($certificate === $random) return certificate();
             }
         }
         return $random;
     }
 
-    function verifyPassword($name, $password)
+    function password($name, $password)
     {
         global $database;
         foreach ($database->accounts as $account) {
             if ($account->name === $name) {
-                return md5(sha1($account->saltA . $password . $account->saltB)) === $account->hashed;
+                return hash("sha256", $account->saltA . $password . $account->saltB) === $account->hashed;
             }
         }
         return false;
@@ -113,8 +118,8 @@ function login($name, $password)
     foreach ($database->accounts as $account) {
         if ($account->name === $name) {
             $accountFound = true;
-            if (verifyPassword($name, $password)) {
-                $certificate = generateCertificate();
+            if (password($name, $password)) {
+                $certificate = certificate();
                 array_push($account->certificates, $certificate);
                 save();
                 $result->login = new stdClass();
@@ -132,44 +137,48 @@ function register($name, $password)
 {
     global $result, $database;
 
-    function generateID()
+    function id()
     {
         global $database;
         $random = random(10);
         foreach ($database->accounts as $account) {
-            if ($account->id === $random) return generateID();
+            if ($account->id === $random) return id();
         }
         return $random;
     }
 
-    function generateSalt()
+    function salt()
     {
-        return random(32);
+        return random(128);
     }
 
-    function checkName($name)
+    function name($name)
     {
         global $database;
         foreach ($database->accounts as $account) {
-            if ($account->name === $name) return false;
+            if ($account->name === $name) return true;
         }
-        return true;
+        return false;
     }
 
     $result->register = new stdClass();
     $result->register->success = false;
-    if (checkName($name)) {
-        $account = new stdClass();
-        $account->id = generateID();
-        $account->name = $name;
-        $account->certificates = array();
-        $account->saltA = generateSalt();
-        $account->saltB = generateSalt();
-        $account->hashed = md5(sha1($account->saltA . $password . $account->saltB));
-        array_push($database->accounts, $account);
-        save();
-        $result->register = new stdClass();
-        $result->register->success = true;
+    if (!name($name)) {
+        if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
+            $account = new stdClass();
+            $account->id = id();
+            $account->name = $name;
+            $account->certificates = array();
+            $account->saltA = salt();
+            $account->saltB = salt();
+            $account->hashed = hash("sha256", $account->saltA . $password . $account->saltB);
+            array_push($database->accounts, $account);
+            save();
+            $result->register = new stdClass();
+            $result->register->success = true;
+        } else {
+            $result->errors->registration = "Password too short";
+        }
     } else {
         $result->errors->registration = "Name already taken";
     }
