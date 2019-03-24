@@ -76,7 +76,7 @@ function verify($certificate)
             if ($current === $certificate) {
                 $result->verify = new stdClass();
                 $result->verify->name = $account->name;
-                return $account->id;
+                return user($account->id);
             }
         }
     }
