@@ -16,19 +16,19 @@ function init()
                     if (isset($parameters->name) && isset($parameters->password))
                         login($parameters->name, $parameters->password);
                     else
-                        $result->errors->login = "Missing info";
+                        $result->errors->login = "Missing information";
                     break;
                 case "register":
                     if (isset($parameters->name) && isset($parameters->password))
                         register($parameters->name, $parameters->password);
                     else
-                        $result->errors->registration = "Missing info";
+                        $result->errors->registration = "Missing information";
                     break;
                 case "verify":
                     if (isset($parameters->certificate))
                         return verify($parameters->certificate);
                     else
-                        $result->errors->verification = "Missing info";
+                        $result->errors->verification = "Missing information";
                     break;
             }
         }
@@ -44,13 +44,28 @@ function filter($source)
     return $source;
 }
 
-function generateRandom($length)
+function random($length)
 {
     $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
     if ($length > 0) {
-        return $current . generateRandom($length - 1);
+        return $current . random($length - 1);
     }
     return "";
+}
+
+function user($userID){
+    global $database;
+    foreach ($database->accounts as $account) {
+        if($account->id === $userID){
+            $user=$account;
+            unset($user->saltA);
+            unset($user->saltB);
+            unset($user->hashed);
+            unset($user->certificates);
+            return $user;
+        }
+    }
+    return null;
 }
 
 function verify($certificate)
@@ -74,7 +89,7 @@ function login($name, $password)
     function generateCertificate()
     {
         global $database;
-        $random = generateRandom(28);
+        $random = random(28);
         foreach ($database->accounts as $account) {
             foreach ($account->certificates as $certificate) {
                 if ($certificate === $random) return generateCertificate();
@@ -120,7 +135,7 @@ function register($name, $password)
     function generateID()
     {
         global $database;
-        $random = generateRandom(10);
+        $random = random(10);
         foreach ($database->accounts as $account) {
             if ($account->id === $random) return generateID();
         }
@@ -129,7 +144,7 @@ function register($name, $password)
 
     function generateSalt()
     {
-        return generateRandom(32);
+        return random(32);
     }
 
     function checkName($name)
