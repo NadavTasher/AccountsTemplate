@@ -13,11 +13,14 @@ function hide(v) {
 
 function show(v) {
     get(v).style.removeProperty("display");
-
 }
 
 function get(v) {
     return (typeof "" === typeof v || typeof '' === typeof v) ? document.getElementById(v) : v;
+}
+
+function visible(v) {
+    return (get(v).style.getPropertyValue("display") !== "none");
 }
 
 function clear(v) {
@@ -42,6 +45,30 @@ function theme(color) {
         document.head.appendChild(meta);
     }
 
+}
+
+function download(file, data, type = "text/plain", encoding = "utf8") {
+    let link = document.createElement("a");
+    link.download = file;
+    link.href = "data:" + type + ";" + encoding + "," + data;
+    link.click();
+}
+
+function slide(v, direction = false, callback = undefined) {
+    let view = get(v);
+    let current = -(view.offsetWidth + view.offsetLeft);
+    let interval = setInterval(function () {
+        if (current < 0) {
+            current++;
+            view.style.position = "relative";
+            view.style[direction ? "right" : "left"] = current + "px";
+        } else {
+            clearInterval(interval);
+            view.style.removeProperty(direction ? "right" : "left");
+            view.style.removeProperty("position");
+            if (callback !== undefined) callback();
+        }
+    }, 1);
 }
 
 function gestures(up, down, left, right, upgoing, downgoing, leftgoing, rightgoing) {
