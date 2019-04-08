@@ -95,16 +95,18 @@ function login($name, $password)
 {
     global $result, $database;
     $accountFound = false;
+    $result->login = new stdClass();
+    $result->login->success = false;
     foreach ($database->accounts as $account) {
         if ($account->name === $name) {
             $accountFound = true;
             if (!lockout($account)) {
                 if (password($account, $password)) {
                     $certificate = certificate();
-                    $result->login = new stdClass();
                     $result->login->certificate = $certificate;
                     array_push($account->certificates, $certificate);
                     save();
+                    $result->login->success = true;
                 } else {
                     lock($account);
                     $result->errors->login = "Incorrect password";
@@ -134,10 +136,9 @@ function register($name, $password)
                 $account->saltA = salt();
                 $account->saltB = salt();
                 $account->hashed = hash("sha256", $account->saltA . $password . $account->saltB);
-                $result->register = new stdClass();
-                $result->register->success = true;
                 array_push($database->accounts, $account);
                 save();
+                $result->register->success = true;
             } else {
                 $result->errors->registration = "Password too short";
             }

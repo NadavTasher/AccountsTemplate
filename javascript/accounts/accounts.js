@@ -14,7 +14,6 @@ function accounts(callback) {
         view("login");
 }
 
-
 function fillForm(form = new FormData()) {
     if (hasCookie(certificateCookie)) {
         form.append("action", "verify");
@@ -57,8 +56,8 @@ function verify(success, failure) {
 
 function login(name, password) {
 
-    function error(error){
-        get("login-error").innerText=error;
+    function error(error) {
+        get("login-error").innerText = error;
     }
 
     let form = new FormData();
@@ -92,8 +91,8 @@ function login(name, password) {
 
 function register(name, password) {
 
-    function error(error){
-        get("register-error").innerText=error;
+    function error(error) {
+        get("register-error").innerText = error;
     }
 
     let form = new FormData();
