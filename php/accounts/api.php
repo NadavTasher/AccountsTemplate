@@ -1,4 +1,6 @@
 <?php
+
+const REGISTRATION_ENABLED = true;
 const MINIMUM_PASSWORD_LENGTH = 8;
 const LOCKOUT_TIME = 5 * 60;
 const LOCKOUT_ATTEMPTS = 5;
@@ -121,25 +123,29 @@ function register($name, $password)
     global $result, $database;
     $result->register = new stdClass();
     $result->register->success = false;
-    if (!name($name)) {
-        if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
-            $account = new stdClass();
-            $account->id = id();
-            $account->name = $name;
-            $account->certificates = array();
-            $account->lockout = new stdClass();
-            $account->saltA = salt();
-            $account->saltB = salt();
-            $account->hashed = hash("sha256", $account->saltA . $password . $account->saltB);
-            $result->register = new stdClass();
-            $result->register->success = true;
-            array_push($database->accounts, $account);
-            save();
+    if (REGISTRATION_ENABLED) {
+        if (!name($name)) {
+            if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
+                $account = new stdClass();
+                $account->id = id();
+                $account->name = $name;
+                $account->certificates = array();
+                $account->lockout = new stdClass();
+                $account->saltA = salt();
+                $account->saltB = salt();
+                $account->hashed = hash("sha256", $account->saltA . $password . $account->saltB);
+                $result->register = new stdClass();
+                $result->register->success = true;
+                array_push($database->accounts, $account);
+                save();
+            } else {
+                $result->errors->registration = "Password too short";
+            }
         } else {
-            $result->errors->registration = "Password too short";
+            $result->errors->registration = "Name already taken";
         }
     } else {
-        $result->errors->registration = "Name already taken";
+        $result->errors->registration = "Registration disabled";
     }
 }
 
