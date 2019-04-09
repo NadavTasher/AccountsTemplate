@@ -10,6 +10,12 @@ $database = json_decode(file_get_contents(DATABASE));
 
 $result = new stdClass();
 
+function save()
+{
+    global $database;
+    file_put_contents(DATABASE, json_encode($database));
+}
+
 function init()
 {
     if (isset($_POST["action"])) {
@@ -48,15 +54,6 @@ function filter($source)
     $source = str_replace("<", "", $source);
     $source = str_replace(">", "", $source);
     return $source;
-}
-
-function random($length)
-{
-    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
-    if ($length > 0) {
-        return $current . random($length - 1);
-    }
-    return "";
 }
 
 function user($id)
@@ -147,12 +144,6 @@ function hashed($password, $saltA, $saltB)
     return hash("sha256", $saltA . $password . $saltB);
 }
 
-function save()
-{
-    global $database;
-    file_put_contents(DATABASE, json_encode($database));
-}
-
 function certificate()
 {
     global $database;
@@ -200,6 +191,15 @@ function id()
 function salt()
 {
     return random(128);
+}
+
+function random($length)
+{
+    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
+    if ($length > 0) {
+        return $current . random($length - 1);
+    }
+    return "";
 }
 
 function name($name)
