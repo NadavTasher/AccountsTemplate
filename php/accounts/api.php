@@ -1,22 +1,14 @@
 <?php
-
-const REGISTER_ENABLED = true;
-const MINIMUM_PASSWORD_LENGTH = 8;
-const LOCKOUT_TIME = 5 * 60;
+const DATABASE = __DIR__ . "/../../files/accounts/database.json";
 const LOCKOUT_ATTEMPTS = 5;
+const LOCKOUT_TIME = 5 * 60;
+const MINIMUM_PASSWORD_LENGTH = 8;
+const REGISTER_ENABLED = true;
 
-define("DATABASE", dirname(__FILE__) . "/../../files/accounts/database.json");
 $database = json_decode(file_get_contents(DATABASE));
-
 $result = new stdClass();
 
-function save()
-{
-    global $database;
-    file_put_contents(DATABASE, json_encode($database));
-}
-
-function init()
+function accounts()
 {
     if (isset($_POST["action"])) {
         $action = $_POST["action"];
@@ -48,6 +40,23 @@ function init()
     return null;
 }
 
+function certificate()
+{
+    global $database;
+    $random = random(64);
+    foreach ($database as $id => $account) {
+        foreach ($account->certificates as $certificate) {
+            if ($certificate === $random) return certificate();
+        }
+    }
+    return $random;
+}
+
+function error($type, $message)
+{
+    result("errors", $type, $message);
+}
+
 function filter($source)
 {
     // Filter inputs from XSS and other attacks
@@ -56,31 +65,35 @@ function filter($source)
     return $source;
 }
 
-function user($id)
+function hashed($password, $saltA, $saltB)
 {
-    global $database;
-    $user = $database->$id;
-    unset($user->saltA);
-    unset($user->saltB);
-    unset($user->hashed);
-    unset($user->certificates);
-    return $user;
+    return hash("sha256", $saltA . $password . $saltB);
 }
 
-function verify($certificate)
+function id()
 {
     global $database;
-    result("verify", "success", false);
+    $random = random(10);
     foreach ($database as $id => $account) {
-        foreach ($account->certificates as $current) {
-            if ($current === $certificate) {
-                result("verify", "name", $account->name);
-                result("verify", "success", true);
-                return user($id);
-            }
-        }
+        if ($id === $random) return id();
     }
-    return null;
+    return $random;
+}
+
+function lock($id)
+{
+    global $database;
+    $database->$id->lockout->attempts++;
+    if ($database->$id->lockout->attempts >= LOCKOUT_ATTEMPTS) {
+        $database->$id->lockout->attempts = 0;
+        $database->$id->lockout->time = time() + LOCKOUT_TIME;
+    }
+}
+
+function lockout($id)
+{
+    global $database;
+    return isset($database->$id->lockout->time) && $database->$id->lockout->time > time();
 }
 
 function login($name, $password)
@@ -108,6 +121,30 @@ function login($name, $password)
     }
     if (!$found)
         error("login", "Account not found");
+}
+
+function name($name)
+{
+    global $database;
+    foreach ($database as $id => $account) {
+        if ($account->name === $name) return true;
+    }
+    return false;
+}
+
+function password($id, $password)
+{
+    global $database;
+    return hashed($password, $database->$id->saltA, $database->$id->saltB) === $database->$id->hashed;
+}
+
+function random($length)
+{
+    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
+    if ($length > 0) {
+        return $current . random($length - 1);
+    }
+    return "";
 }
 
 function register($name, $password)
@@ -139,53 +176,11 @@ function register($name, $password)
     }
 }
 
-function hashed($password, $saltA, $saltB)
+function result($type, $key, $value)
 {
-    return hash("sha256", $saltA . $password . $saltB);
-}
-
-function certificate()
-{
-    global $database;
-    $random = random(64);
-    foreach ($database as $id => $account) {
-        foreach ($account->certificates as $certificate) {
-            if ($certificate === $random) return certificate();
-        }
-    }
-    return $random;
-}
-
-function password($id, $password)
-{
-    global $database;
-    return hashed($password, $database->$id->saltA, $database->$id->saltB) === $database->$id->hashed;
-}
-
-function lockout($id)
-{
-    global $database;
-    return isset($database->$id->lockout->time) && $database->$id->lockout->time > time();
-}
-
-function lock($id)
-{
-    global $database;
-    $database->$id->lockout->attempts++;
-    if ($database->$id->lockout->attempts >= LOCKOUT_ATTEMPTS) {
-        $database->$id->lockout->attempts = 0;
-        $database->$id->lockout->time = time() + LOCKOUT_TIME;
-    }
-}
-
-function id()
-{
-    global $database;
-    $random = random(10);
-    foreach ($database as $id => $account) {
-        if ($id === $random) return id();
-    }
-    return $random;
+    global $result;
+    if (!isset($result->$type)) $result->$type = new stdClass();
+    $result->$type->$key = $value;
 }
 
 function salt()
@@ -193,32 +188,36 @@ function salt()
     return random(128);
 }
 
-function random($length)
-{
-    $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
-    if ($length > 0) {
-        return $current . random($length - 1);
-    }
-    return "";
-}
-
-function name($name)
+function save()
 {
     global $database;
+    file_put_contents(DATABASE, json_encode($database));
+}
+
+function user($id)
+{
+    global $database;
+    $user = $database->$id;
+    unset($user->saltA);
+    unset($user->saltB);
+    unset($user->hashed);
+    unset($user->certificates);
+    return $user;
+}
+
+function verify($certificate)
+{
+    global $database;
+    result("verify", "success", false);
     foreach ($database as $id => $account) {
-        if ($account->name === $name) return true;
+        foreach ($account->certificates as $current) {
+            if ($current === $certificate) {
+                result("verify", "name", $account->name);
+                result("verify", "success", true);
+                return user($id);
+            }
+        }
     }
-    return false;
+    return null;
 }
 
-function error($type, $message)
-{
-    result("errors", $type, $message);
-}
-
-function result($type, $key, $value)
-{
-    global $result;
-    if (!isset($result->$type)) $result->$type = new stdClass();
-    $result->$type->$key = $value;
-}

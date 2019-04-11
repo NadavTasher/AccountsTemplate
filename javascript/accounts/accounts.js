@@ -42,6 +42,7 @@ function verify(success, failure) {
                 if (json.verify.hasOwnProperty("success")) {
                     if (json.verify.success) {
                         loggedIn = true;
+                        view("app");
                         success();
                     } else {
                         failure();
