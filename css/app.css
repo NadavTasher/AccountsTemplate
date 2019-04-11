@@ -20,7 +20,6 @@ body > div {
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 100%;
 }
 
 html,
@@ -35,9 +34,10 @@ form {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    align-self: stretch;
+    align-self: center;
     align-items: center;
     min-height: fit-content;
+    width: 100%;
 }
 
 p,
