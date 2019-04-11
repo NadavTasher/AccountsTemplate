@@ -26,33 +26,12 @@ function force() {
     success();
 }
 
-function isLoggedIn() {
-    return loggedIn;
+function hasCookie(name) {
+    return pullCookie(name) !== undefined;
 }
 
-function verify(success, failure) {
-    let form = fillForm();
-    fetch("php/accounts/accounts.php", {
-        method: "post",
-        body: form
-    }).then(response => {
-        response.text().then((result) => {
-            let json = JSON.parse(result);
-            if (json.hasOwnProperty("verify")) {
-                if (json.verify.hasOwnProperty("success")) {
-                    if (json.verify.success) {
-                        loggedIn = true;
-                        view("app");
-                        success();
-                    } else {
-                        failure();
-                    }
-                }
-            } else {
-                failure();
-            }
-        });
-    });
+function isLoggedIn() {
+    return loggedIn;
 }
 
 function login(name, password) {
@@ -85,6 +64,27 @@ function login(name, password) {
     });
 }
 
+function pullCookie(name) {
+    name += "=";
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+        let cookie = cookies[i];
+        while (cookie.charAt(0) === ' ') {
+            cookie = cookie.substring(1);
+        }
+        if (cookie.indexOf(name) === 0) {
+            return decodeURIComponent(cookie.substring(name.length, cookie.length));
+        }
+    }
+    return undefined;
+}
+
+function pushCookie(name, value) {
+    const date = new Date();
+    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
+    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + date.toUTCString() + ";domain=" + window.location.hostname + ";path=/";
+}
+
 function register(name, password) {
 
     function error(error) {
@@ -112,27 +112,27 @@ function register(name, password) {
     });
 }
 
-function pushCookie(name, value) {
-    const date = new Date();
-    date.setTime(date.getTime() + (365 * 24 * 60 * 60 * 1000));
-    document.cookie = name + "=" + encodeURIComponent(value) + ";expires=" + date.toUTCString() + ";domain=" + window.location.hostname + ";path=/";
-}
-
-function pullCookie(name) {
-    name += "=";
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        let cookie = cookies[i];
-        while (cookie.charAt(0) === ' ') {
-            cookie = cookie.substring(1);
-        }
-        if (cookie.indexOf(name) === 0) {
-            return decodeURIComponent(cookie.substring(name.length, cookie.length));
-        }
-    }
-    return undefined;
-}
-
-function hasCookie(name) {
-    return pullCookie(name) !== undefined;
+function verify(success, failure) {
+    let form = fillForm();
+    fetch("php/accounts/accounts.php", {
+        method: "post",
+        body: form
+    }).then(response => {
+        response.text().then((result) => {
+            let json = JSON.parse(result);
+            if (json.hasOwnProperty("verify")) {
+                if (json.verify.hasOwnProperty("success")) {
+                    if (json.verify.success) {
+                        loggedIn = true;
+                        view("app");
+                        success();
+                    } else {
+                        failure();
+                    }
+                }
+            } else {
+                failure();
+            }
+        });
+    });
 }
