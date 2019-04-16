@@ -198,6 +198,7 @@ function user($id)
 {
     global $database;
     $user = $database->$id;
+    $user->id = $id;
     unset($user->saltA);
     unset($user->saltB);
     unset($user->hashed);
