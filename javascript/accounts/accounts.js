@@ -1,11 +1,11 @@
 const certificateCookie = "certificate";
-let success, failure, loggedIn = false;
+let success, failure;
 
 function accounts(callback) {
     view("accounts");
-    success = () => {
+    success = (loggedIn = false) => {
         hide("accounts");
-        callback();
+        callback(loggedIn);
     };
     failure = () => view("login");
     if (hasCookie(certificateCookie))
@@ -28,10 +28,6 @@ function force() {
 
 function hasCookie(name) {
     return pullCookie(name) !== undefined;
-}
-
-function isLoggedIn() {
-    return loggedIn;
 }
 
 function login(name, password) {
@@ -123,9 +119,8 @@ function verify(success, failure) {
             if (json.hasOwnProperty("verify")) {
                 if (json.verify.hasOwnProperty("success")) {
                     if (json.verify.success) {
-                        loggedIn = true;
                         view("app");
-                        success();
+                        success(true);
                     } else {
                         failure();
                     }
