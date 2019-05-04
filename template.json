@@ -23,7 +23,7 @@
     },
     {
       "name": "theme",
-      "description": "App Theme",
+      "description": "App Color",
       "pattern": "(#([0-9]|[A-F]|[a-f]){6})",
       "needle": "#FFFFFF",
       "haystacks": [
