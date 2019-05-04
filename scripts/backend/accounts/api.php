@@ -1,5 +1,5 @@
 <?php
-const DATABASE = __DIR__ . "/../../files/accounts/database.json";
+const DATABASE = __DIR__ . "/../../../files/accounts/database.json";
 const LOCKOUT_ATTEMPTS = 5;
 const LOCKOUT_TIME = 5 * 60;
 const MINIMUM_PASSWORD_LENGTH = 8;
