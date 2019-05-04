@@ -1,8 +1,8 @@
 {
-  "name": "Base",
+  "name": "Accounts",
   "replacements": [
     {
-      "name": "app-name",
+      "name": "name",
       "description": "App Name",
       "pattern": ".+",
       "needle": "AppName",
@@ -12,7 +12,7 @@
       ]
     },
     {
-      "name": "app-description",
+      "name": "description",
       "description": "App Description",
       "pattern": ".+",
       "needle": "AppDescription",
@@ -22,7 +22,7 @@
       ]
     },
     {
-      "name": "app-theme",
+      "name": "theme",
       "description": "App Theme",
       "pattern": "(#([0-9]|[A-F]|[a-f]){6})",
       "needle": "#FFFFFF",
@@ -34,7 +34,7 @@
       ]
     },
     {
-      "name": "app-layout",
+      "name": "layout",
       "description": "App Layout",
       "pattern": ".+",
       "needle": "<!--Your App Body-->",
