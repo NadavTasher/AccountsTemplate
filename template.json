@@ -1,0 +1,46 @@
+{
+  "name": "Base",
+  "replacements": [
+    {
+      "name": "app-name",
+      "description": "App Name",
+      "pattern": ".+",
+      "needle": "AppName",
+      "haystacks": [
+        "index.html",
+        "resources/manifest.json"
+      ]
+    },
+    {
+      "name": "app-description",
+      "description": "App Description",
+      "pattern": ".+",
+      "needle": "AppDescription",
+      "haystacks": [
+        "index.html",
+        "resources/manifest.json"
+      ]
+    },
+    {
+      "name": "app-theme",
+      "description": "App Theme",
+      "pattern": "(#([0-9]|[A-F]|[a-f]){6})",
+      "needle": "#FFFFFF",
+      "haystacks": [
+        "index.html",
+        "resources/manifest.json",
+        "resources/offline.html",
+        "stylesheets/app.css"
+      ]
+    },
+    {
+      "name": "app-layout",
+      "description": "App Layout",
+      "pattern": ".+",
+      "needle": "<!--Your App Body-->",
+      "haystacks": [
+        "index.html"
+      ]
+    }
+  ]
+}

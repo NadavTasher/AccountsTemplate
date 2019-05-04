@@ -39,7 +39,7 @@ function login(name, password) {
     let form = new FormData();
     form.append("action", "login");
     form.append("login", JSON.stringify({name: name, password: password}));
-    fetch("php/accounts/accounts.php", {
+    fetch("scripts/backend/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
@@ -90,7 +90,7 @@ function register(name, password) {
     let form = new FormData();
     form.append("action", "register");
     form.append("register", JSON.stringify({name: name, password: password}));
-    fetch("php/accounts/accounts.php", {
+    fetch("scripts/backend/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
@@ -110,7 +110,7 @@ function register(name, password) {
 
 function verify(success, failure) {
     let form = fillForm();
-    fetch("php/accounts/accounts.php", {
+    fetch("scripts/backend/accounts/accounts.php", {
         method: "post",
         body: form
     }).then(response => {
