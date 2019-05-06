@@ -1,9 +1,13 @@
 <?php
+
 const DATABASE = __DIR__ . "/../../../files/accounts/database.json";
 const LOCKOUT_ATTEMPTS = 5;
 const LOCKOUT_TIME = 5 * 60;
 const MINIMUM_PASSWORD_LENGTH = 8;
+
 const REGISTER_ENABLED = true;
+const VERIFY_ENABLED = true;
+const LOGIN_ENABLED = true;
 
 $database = json_decode(file_get_contents(DATABASE));
 $result = new stdClass();
@@ -16,22 +20,34 @@ function accounts()
             $parameters = json_decode($_POST[$action]);
             switch ($action) {
                 case "login":
-                    if (isset($parameters->name) && isset($parameters->password))
-                        login($parameters->name, $parameters->password);
-                    else
+                    if (isset($parameters->name) && isset($parameters->password)) {
+                        if (LOGIN_ENABLED)
+                            login($parameters->name, $parameters->password);
+                        else
+                            error("login", "Login disabled");
+                    } else {
                         error("login", "Missing information");
+                    }
                     break;
                 case "register":
-                    if (isset($parameters->name) && isset($parameters->password))
-                        register($parameters->name, $parameters->password);
-                    else
+                    if (isset($parameters->name) && isset($parameters->password)) {
+                        if (REGISTER_ENABLED)
+                            register($parameters->name, $parameters->password);
+                        else
+                            error("register", "Registration disabled");
+                    } else {
                         error("register", "Missing information");
+                    }
                     break;
                 case "verify":
-                    if (isset($parameters->certificate))
-                        return verify($parameters->certificate);
-                    else
+                    if (isset($parameters->certificate)) {
+                        if (VERIFY_ENABLED)
+                            return verify($parameters->certificate);
+                        else
+                            error("verify", "Verify disabled");
+                    } else {
                         error("verify", "Missing information");
+                    }
                     break;
             }
             save();
@@ -151,28 +167,24 @@ function register($name, $password)
 {
     global $database;
     result("register", "success", false);
-    if (REGISTER_ENABLED) {
-        if (!name($name)) {
-            if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
-                $account = new stdClass();
-                $account->certificates = array();
-                $account->lockout = new stdClass();
-                $account->lockout->attempts = 0;
-                $account->name = $name;
-                $account->saltA = salt();
-                $account->saltB = salt();
-                $account->hashed = hashed($password, $account->saltA, $account->saltB);
-                $id = id();
-                $database->$id = $account;
-                result("register", "success", true);
-            } else {
-                error("register", "Password too short");
-            }
+    if (!name($name)) {
+        if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
+            $account = new stdClass();
+            $account->certificates = array();
+            $account->lockout = new stdClass();
+            $account->lockout->attempts = 0;
+            $account->name = $name;
+            $account->saltA = salt();
+            $account->saltB = salt();
+            $account->hashed = hashed($password, $account->saltA, $account->saltB);
+            $id = id();
+            $database->$id = $account;
+            result("register", "success", true);
         } else {
-            error("register", "Name already taken");
+            error("register", "Password too short");
         }
     } else {
-        error("register", "Registration disabled");
+        error("register", "Name already taken");
     }
 }
 
