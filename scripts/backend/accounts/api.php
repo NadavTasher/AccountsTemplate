@@ -50,7 +50,6 @@ function accounts()
                     }
                     break;
             }
-            save();
         }
     }
     return null;
@@ -137,6 +136,7 @@ function login($name, $password)
     }
     if (!$found)
         error("login", "Account not found");
+    save();
 }
 
 function name($name)
@@ -186,6 +186,7 @@ function register($name, $password)
     } else {
         error("register", "Name already taken");
     }
+    save();
 }
 
 function result($type, $key, $value)
