@@ -1,6 +1,6 @@
 <?php
 
-const DATABASE = __DIR__ . "/../../../files/accounts/database.json";
+const DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "database.json";
 const LOCKOUT_ATTEMPTS = 5;
 const LOCKOUT_TIME = 5 * 60;
 const MINIMUM_PASSWORD_LENGTH = 8;
@@ -14,10 +14,11 @@ $result = new stdClass();
 
 function accounts()
 {
-    if (isset($_POST["action"])) {
-        $action = $_POST["action"];
-        if (isset($_POST[$action])) {
-            $parameters = json_decode($_POST[$action]);
+    if (isset($_POST["accounts"])) {
+        $information = json_decode(filter($_POST["accounts"]));
+        if (isset($information->action) && isset($information->parameters)) {
+            $action = $information->action;
+            $parameters = $information->parameters;
             switch ($action) {
                 case "login":
                     if (isset($parameters->name) && isset($parameters->password)) {

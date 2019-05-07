@@ -16,8 +16,12 @@ function accounts(callback) {
 
 function fillForm(form = new FormData()) {
     if (hasCookie(certificateCookie)) {
-        form.append("action", "verify");
-        form.append("verify", JSON.stringify({certificate: pullCookie(certificateCookie)}));
+        form.append("accounts", JSON.stringify({
+            action: "verify",
+            parameters: {
+                certificate: pullCookie(certificateCookie)
+            }
+        }));
     }
     return form;
 }
@@ -37,8 +41,13 @@ function login(name, password) {
     }
 
     let form = new FormData();
-    form.append("action", "login");
-    form.append("login", JSON.stringify({name: name, password: password}));
+    form.append("accounts", JSON.stringify({
+        action: "login",
+        parameters: {
+            name: name,
+            password: password
+        }
+    }));
     fetch("scripts/backend/accounts/accounts.php", {
         method: "post",
         body: form
@@ -88,8 +97,13 @@ function register(name, password) {
     }
 
     let form = new FormData();
-    form.append("action", "register");
-    form.append("register", JSON.stringify({name: name, password: password}));
+    form.append("accounts", JSON.stringify({
+        action: "register",
+        parameters: {
+            name: name,
+            password: password
+        }
+    }));
     fetch("scripts/backend/accounts/accounts.php", {
         method: "post",
         body: form
