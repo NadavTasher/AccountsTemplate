@@ -193,8 +193,9 @@ function register($name, $password)
 function result($type, $key, $value)
 {
     global $result;
-    if (!isset($result->$type)) $result->$type = new stdClass();
-    $result->$type->$key = $value;
+    if (!isset($result->accounts)) $result->accounts = new stdClass();
+    if (!isset($result->accounts->$type)) $result->accounts->$type = new stdClass();
+    $result->accounts->$type->$key = $value;
 }
 
 function salt()

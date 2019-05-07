@@ -54,17 +54,20 @@ function login(name, password) {
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            if (json.hasOwnProperty("login")) {
-                if (json.login.hasOwnProperty("success")) {
-                    if (json.login.success) {
-                        if (json.login.hasOwnProperty("certificate")) {
-                            pushCookie(certificateCookie, json.login.certificate);
-                            window.location.reload();
+            if (json.hasOwnProperty("accounts")) {
+                let accounts = json.accounts;
+                if (accounts.hasOwnProperty("login")) {
+                    if (accounts.login.hasOwnProperty("success")) {
+                        if (accounts.login.success) {
+                            if (accounts.login.hasOwnProperty("certificate")) {
+                                pushCookie(certificateCookie, accounts.login.certificate);
+                                window.location.reload();
+                            }
                         }
                     }
                 }
+                if (accounts.hasOwnProperty("errors") && accounts.errors.hasOwnProperty("login")) error(accounts.errors.login);
             }
-            if (json.hasOwnProperty("errors") && json.errors.hasOwnProperty("login")) error(json.errors.login);
         });
     });
 }
@@ -110,14 +113,17 @@ function register(name, password) {
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            if (json.hasOwnProperty("register")) {
-                if (json.register.hasOwnProperty("success")) {
-                    if (json.register.success) {
-                        login(name, password);
+            if (json.hasOwnProperty("accounts")) {
+                let accounts = json.accounts;
+                if (accounts.hasOwnProperty("register")) {
+                    if (accounts.register.hasOwnProperty("success")) {
+                        if (accounts.register.success) {
+                            login(name, password);
+                        }
                     }
                 }
+                if (accounts.hasOwnProperty("errors") && accounts.errors.hasOwnProperty("register")) error(accounts.errors.register);
             }
-            if (json.hasOwnProperty("errors") && json.errors.hasOwnProperty("register")) error(json.errors.register);
         });
     });
 }
@@ -130,17 +136,20 @@ function verify(success, failure) {
     }).then(response => {
         response.text().then((result) => {
             let json = JSON.parse(result);
-            if (json.hasOwnProperty("verify")) {
-                if (json.verify.hasOwnProperty("success")) {
-                    if (json.verify.success) {
-                        view("app");
-                        success(true);
-                    } else {
-                        failure();
+            if (json.hasOwnProperty("accounts")) {
+                let accounts = json.accounts;
+                if (accounts.hasOwnProperty("verify")) {
+                    if (accounts.verify.hasOwnProperty("success")) {
+                        if (accounts.verify.success) {
+                            view("app");
+                            success(true);
+                        } else {
+                            failure();
+                        }
                     }
+                } else {
+                    failure();
                 }
-            } else {
-                failure();
             }
         });
     });
