@@ -51,6 +51,7 @@ function accounts()
                     }
                     break;
             }
+            accounts_save();
         }
     }
     return null;
@@ -135,7 +136,6 @@ function accounts_login($name, $password)
     }
     if (!$found)
         accounts_error("login", "Account not found");
-    accounts_save();
 }
 
 function accounts_name($name)
@@ -185,7 +185,6 @@ function accounts_register($name, $password)
     } else {
         accounts_error("register", "Name already taken");
     }
-    accounts_save();
 }
 
 function accounts_result($type, $key, $value)
