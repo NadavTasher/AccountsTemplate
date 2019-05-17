@@ -1,53 +1,53 @@
 <?php
 
-const DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "database.json";
-const LOCKOUT_ATTEMPTS = 5;
-const LOCKOUT_TIME = 5 * 60;
-const MINIMUM_PASSWORD_LENGTH = 8;
+const ACCOUNTS_DATABASE = __DIR__ . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . ".." . DIRECTORY_SEPARATOR . "files" . DIRECTORY_SEPARATOR . "accounts" . DIRECTORY_SEPARATOR . "database.json";
+const ACCOUNTS_LOCKOUT_ATTEMPTS = 5;
+const ACCOUNTS_LOCKOUT_TIME = 5 * 60;
+const ACCOUNTS_MINIMUM_PASSWORD_LENGTH = 8;
 
-const REGISTER_ENABLED = true;
-const VERIFY_ENABLED = true;
-const LOGIN_ENABLED = true;
+const ACCOUNTS_REGISTER_ENABLED = true;
+const ACCOUNTS_VERIFY_ENABLED = true;
+const ACCOUNTS_LOGIN_ENABLED = true;
 
-$database = json_decode(file_get_contents(DATABASE));
+$accounts_database = json_decode(file_get_contents(ACCOUNTS_DATABASE));
 $result = new stdClass();
 
 function accounts()
 {
     if (isset($_POST["accounts"])) {
-        $information = json_decode(filter($_POST["accounts"]));
+        $information = json_decode(accounts_filter($_POST["accounts"]));
         if (isset($information->action) && isset($information->parameters)) {
             $action = $information->action;
             $parameters = $information->parameters;
             switch ($action) {
                 case "login":
                     if (isset($parameters->name) && isset($parameters->password)) {
-                        if (LOGIN_ENABLED)
-                            login($parameters->name, $parameters->password);
+                        if (ACCOUNTS_LOGIN_ENABLED)
+                            accounts_login($parameters->name, $parameters->password);
                         else
-                            error("login", "Login disabled");
+                            accounts_error("login", "Login disabled");
                     } else {
-                        error("login", "Missing information");
+                        accounts_error("login", "Missing information");
                     }
                     break;
                 case "register":
                     if (isset($parameters->name) && isset($parameters->password)) {
-                        if (REGISTER_ENABLED)
-                            register($parameters->name, $parameters->password);
+                        if (ACCOUNTS_REGISTER_ENABLED)
+                            accounts_register($parameters->name, $parameters->password);
                         else
-                            error("register", "Registration disabled");
+                            accounts_error("register", "Registration disabled");
                     } else {
-                        error("register", "Missing information");
+                        accounts_error("register", "Missing information");
                     }
                     break;
                 case "verify":
                     if (isset($parameters->certificate)) {
-                        if (VERIFY_ENABLED)
-                            return verify($parameters->certificate);
+                        if (ACCOUNTS_VERIFY_ENABLED)
+                            return accounts_verify($parameters->certificate);
                         else
-                            error("verify", "Verify disabled");
+                            accounts_error("verify", "Verify disabled");
                     } else {
-                        error("verify", "Missing information");
+                        accounts_error("verify", "Missing information");
                     }
                     break;
             }
@@ -56,24 +56,24 @@ function accounts()
     return null;
 }
 
-function certificate()
+function accounts_certificate()
 {
-    global $database;
-    $random = random(64);
-    foreach ($database as $id => $account) {
+    global $accounts_database;
+    $random = accounts_random(64);
+    foreach ($accounts_database as $id => $account) {
         foreach ($account->certificates as $certificate) {
-            if ($certificate === $random) return certificate();
+            if ($certificate === $random) return accounts_certificate();
         }
     }
     return $random;
 }
 
-function error($type, $message)
+function accounts_error($type, $message)
 {
-    result("errors", $type, $message);
+    accounts_result("errors", $type, $message);
 }
 
-function filter($source)
+function accounts_filter($source)
 {
     // Filter inputs from XSS and other attacks
     $source = str_replace("<", "", $source);
@@ -81,116 +81,114 @@ function filter($source)
     return $source;
 }
 
-function hashed($password, $saltA, $saltB)
+function accounts_hashed($password, $saltA, $saltB)
 {
     return hash("sha256", $saltA . $password . $saltB);
 }
 
-function id()
+function accounts_id()
 {
-    global $database;
-    $random = random(10);
-    foreach ($database as $id => $account) {
-        if ($id === $random) return id();
-    }
+    global $accounts_database;
+    $random = accounts_random(10);
+    if (isset($accounts_database->$random)) return accounts_id();
     return $random;
 }
 
-function lock($id)
+function accounts_lock($id)
 {
-    global $database;
-    $database->$id->lockout->attempts++;
-    if ($database->$id->lockout->attempts >= LOCKOUT_ATTEMPTS) {
-        $database->$id->lockout->attempts = 0;
-        $database->$id->lockout->time = time() + LOCKOUT_TIME;
+    global $accounts_database;
+    $accounts_database->$id->lockout->attempts++;
+    if ($accounts_database->$id->lockout->attempts >= ACCOUNTS_LOCKOUT_ATTEMPTS) {
+        $accounts_database->$id->lockout->attempts = 0;
+        $accounts_database->$id->lockout->time = time() + ACCOUNTS_LOCKOUT_TIME;
     }
 }
 
-function lockout($id)
+function accounts_lockout($id)
 {
-    global $database;
-    return isset($database->$id->lockout->time) && $database->$id->lockout->time > time();
+    global $accounts_database;
+    return isset($accounts_database->$id->lockout->time) && $accounts_database->$id->lockout->time > time();
 }
 
-function login($name, $password)
+function accounts_login($name, $password)
 {
-    global $database;
+    global $accounts_database;
     $found = false;
-    result("login", "success", false);
-    foreach ($database as $id => $account) {
+    accounts_result("login", "success", false);
+    foreach ($accounts_database as $id => $account) {
         if ($account->name === $name) {
             $found = true;
-            if (!lockout($id)) {
-                if (password($id, $password)) {
-                    $certificate = certificate();
+            if (!accounts_lockout($id)) {
+                if (accounts_password($id, $password)) {
+                    $certificate = accounts_certificate();
                     array_push($account->certificates, $certificate);
-                    result("login", "certificate", $certificate);
-                    result("login", "success", true);
+                    accounts_result("login", "certificate", $certificate);
+                    accounts_result("login", "success", true);
                 } else {
-                    lock($id);
-                    error("login", "Incorrect password");
+                    accounts_lock($id);
+                    accounts_error("login", "Incorrect password");
                 }
             } else {
-                error("login", "Account locked");
+                accounts_error("login", "Account locked");
             }
         }
     }
     if (!$found)
-        error("login", "Account not found");
-    save();
+        accounts_error("login", "Account not found");
+    accounts_save();
 }
 
-function name($name)
+function accounts_name($name)
 {
-    global $database;
-    foreach ($database as $id => $account) {
+    global $accounts_database;
+    foreach ($accounts_database as $id => $account) {
         if ($account->name === $name) return true;
     }
     return false;
 }
 
-function password($id, $password)
+function accounts_password($id, $password)
 {
-    global $database;
-    return hashed($password, $database->$id->saltA, $database->$id->saltB) === $database->$id->hashed;
+    global $accounts_database;
+    return accounts_hashed($password, $accounts_database->$id->saltA, $accounts_database->$id->saltB) === $accounts_database->$id->hashed;
 }
 
-function random($length)
+function accounts_random($length)
 {
     $current = str_shuffle("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")[0];
     if ($length > 0) {
-        return $current . random($length - 1);
+        return $current . accounts_random($length - 1);
     }
     return "";
 }
 
-function register($name, $password)
+function accounts_register($name, $password)
 {
-    global $database;
-    result("register", "success", false);
-    if (!name($name)) {
-        if (strlen($password) >= MINIMUM_PASSWORD_LENGTH) {
+    global $accounts_database;
+    accounts_result("register", "success", false);
+    if (!accounts_name($name)) {
+        if (strlen($password) >= ACCOUNTS_MINIMUM_PASSWORD_LENGTH) {
             $account = new stdClass();
             $account->certificates = array();
             $account->lockout = new stdClass();
             $account->lockout->attempts = 0;
             $account->name = $name;
-            $account->saltA = salt();
-            $account->saltB = salt();
-            $account->hashed = hashed($password, $account->saltA, $account->saltB);
-            $id = id();
-            $database->$id = $account;
-            result("register", "success", true);
+            $account->saltA = accounts_salt();
+            $account->saltB = accounts_salt();
+            $account->hashed = accounts_hashed($password, $account->saltA, $account->saltB);
+            $id = accounts_id();
+            $accounts_database->$id = $account;
+            accounts_result("register", "success", true);
         } else {
-            error("register", "Password too short");
+            accounts_error("register", "Password too short");
         }
     } else {
-        error("register", "Name already taken");
+        accounts_error("register", "Name already taken");
     }
-    save();
+    accounts_save();
 }
 
-function result($type, $key, $value)
+function accounts_result($type, $key, $value)
 {
     global $result;
     if (!isset($result->accounts)) $result->accounts = new stdClass();
@@ -198,21 +196,21 @@ function result($type, $key, $value)
     $result->accounts->$type->$key = $value;
 }
 
-function salt()
+function accounts_salt()
 {
-    return random(128);
+    return accounts_random(128);
 }
 
-function save()
+function accounts_save()
 {
-    global $database;
-    file_put_contents(DATABASE, json_encode($database));
+    global $accounts_database;
+    file_put_contents(ACCOUNTS_DATABASE, json_encode($accounts_database));
 }
 
-function user($id)
+function accounts_user($id)
 {
-    global $database;
-    $user = $database->$id;
+    global $accounts_database;
+    $user = $accounts_database->$id;
     $user->id = $id;
     unset($user->saltA);
     unset($user->saltB);
@@ -221,16 +219,16 @@ function user($id)
     return $user;
 }
 
-function verify($certificate)
+function accounts_verify($certificate)
 {
-    global $database;
-    result("verify", "success", false);
-    foreach ($database as $id => $account) {
+    global $accounts_database;
+    accounts_result("verify", "success", false);
+    foreach ($accounts_database as $id => $account) {
         foreach ($account->certificates as $current) {
             if ($current === $certificate) {
-                result("verify", "name", $account->name);
-                result("verify", "success", true);
-                return user($id);
+                accounts_result("verify", "name", $account->name);
+                accounts_result("verify", "success", true);
+                return accounts_user($id);
             }
         }
     }
