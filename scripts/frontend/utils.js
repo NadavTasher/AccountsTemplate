@@ -54,18 +54,29 @@ function download(file, data, type = "text/plain", encoding = "utf8") {
     link.click();
 }
 
-function slide(v, direction = false, callback = undefined) {
+function slideIn(v, direction = true, callback = undefined) {
+    slide(v, (direction ? -1 : 1) * (get(v).offsetWidth ), 0, true, callback);
+}
+
+function slideOut(v, direction = true, callback = undefined) {
+    slide(v, 0, (direction ? -1 : 1) * (get(v).offsetWidth ), false, callback);
+}
+
+function slide(v, from, to, release = true, callback = undefined) {
     let view = get(v);
-    let current = -(view.offsetWidth + view.offsetLeft);
+    let current = -(from);
     let interval = setInterval(function () {
-        if (current < 0) {
-            current++;
+        if (current !== to) {
+            if (current < to)
+                current++;
+            else
+                current--;
             view.style.position = "relative";
-            view.style[direction ? "right" : "left"] = current + "px";
+            view.style.left = current + "px";
         } else {
             clearInterval(interval);
-            view.style.removeProperty(direction ? "right" : "left");
-            view.style.removeProperty("position");
+            if (release)
+                view.style.removeProperty("position");
             if (callback !== undefined) callback();
         }
     }, 1);
