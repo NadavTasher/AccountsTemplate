@@ -55,31 +55,22 @@ function download(file, data, type = "text/plain", encoding = "utf8") {
 }
 
 function slideIn(v, direction = true, callback = undefined) {
-    slide(v, (direction ? -1 : 1) * (get(v).offsetWidth ), 0, true, callback);
+    slide(v, (direction ? 1 : -1) * (Math.floor(get(v).offsetWidth - get(v).getBoundingClientRect().left)), 0, 1, callback);
 }
 
 function slideOut(v, direction = true, callback = undefined) {
-    slide(v, 0, (direction ? -1 : 1) * (get(v).offsetWidth ), false, callback);
+    slide(v, 0, (direction ? 1 : -1) * (Math.floor(get(v).offsetWidth - get(v).getBoundingClientRect().left)), 1, callback);
 }
 
-function slide(v, from, to, release = true, callback = undefined) {
+function slide(v, from, to, seconds = 1, callback = undefined) {
     let view = get(v);
-    let current = -(from);
-    let interval = setInterval(function () {
-        if (current !== to) {
-            if (current < to)
-                current++;
-            else
-                current--;
-            view.style.position = "relative";
-            view.style.left = current + "px";
-        } else {
-            clearInterval(interval);
-            if (release)
-                view.style.removeProperty("position");
-            if (callback !== undefined) callback();
-        }
-    }, 1);
+    view.style.transform = "translateX(" + from + "px)";
+    setTimeout(() => {
+        view.style.transition = seconds + "s";
+        view.style.transform = "translateX(" + to + "px)";
+        if (callback !== undefined)
+            setTimeout(callback, 1000 * seconds);
+    }, 0);
 }
 
 function gestures(up, down, left, right, upgoing, downgoing, leftgoing, rightgoing) {
