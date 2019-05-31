@@ -1,4 +1,3 @@
-const accountsAPIEndpoint = "scripts/backend/accounts/accounts.php";
 const certificateCookie = "certificate";
 let success, failure;
 
@@ -49,7 +48,7 @@ function login(name, password) {
             password: password
         }
     }));
-    fetch(accountsAPIEndpoint, {
+    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
         method: "post",
         body: form
     }).then(response => {
@@ -108,7 +107,7 @@ function register(name, password) {
             password: password
         }
     }));
-    fetch(accountsAPIEndpoint, {
+    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
         method: "post",
         body: form
     }).then(response => {
@@ -131,7 +130,7 @@ function register(name, password) {
 
 function verify(success, failure) {
     let form = fillForm();
-    fetch(accountsAPIEndpoint, {
+    fetch(document.getElementsByName("endpoint")[0].getAttribute("content"), {
         method: "post",
         body: form
     }).then(response => {
