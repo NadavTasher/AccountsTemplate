@@ -1,5 +1,5 @@
 function load() {
-    // Your Load Code
+    // App Load Code
 }
 
-// Your App Code
+// App Code
