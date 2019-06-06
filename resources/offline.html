@@ -34,15 +34,13 @@
             bottom: 0;
         }
 
-        html,
-        body {
+        html, body {
             display: flex;
             flex-direction: row;
             justify-content: center;
         }
 
-        div,
-        form {
+        div, form {
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -52,28 +50,22 @@
             width: 100%;
         }
 
-        a,
-        p,
-        input,
-        select,
-        option,
-        button,
-        table {
+        a, p, input, select, option, button, table, textarea {
             -webkit-appearance: none;
             align-self: stretch;
             font-family: Arial, ArialHebrew, sans-serif;
             font-size: x-large;
-            text-align-last: center;
-            text-align: center;
             color: #000;
             margin: 1vh;
             padding: 1vh;
         }
 
-        input,
-        select,
-        option,
-        button {
+        a, p, input, select, option, button, table {
+            text-align-last: center;
+            text-align: center;
+        }
+
+        input, select, option, button, textarea {
             transition-duration: 0.4s;
             background-color: #ddddee;
             border-radius: 1vh;
@@ -81,12 +73,11 @@
             color: #333;
         }
 
-        input:hover,
-        select:hover,
-        option:hover,
-        button:hover {
+        input:hover, select:hover, option:hover, button:hover, textarea:hover {
             background-color: #bbbbcc;
         }
+
+        /* App Style */
     </style>
 </head>
 <body>
