@@ -134,3 +134,19 @@ function worker(w = "worker.js") {
         });
     }
 }
+
+function html() {
+    fetch("layouts/template.html", {
+        method: "get"
+    }).then(response => {
+        response.text().then((template) => {
+            fetch("layouts/app.html", {
+                method: "get"
+            }).then(response => {
+                response.text().then((app) => {
+                    document.body.children[0].innerHTML = template.replace("<!--Your App Body-->", app);
+                });
+            });
+        });
+    });
+}
