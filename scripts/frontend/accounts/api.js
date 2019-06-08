@@ -28,14 +28,9 @@ function accounts(callback = null) {
     }
 }
 
-function fillForm(form = new FormData()) {
+function fillForm(form = body()) {
     if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
-        form.append(ACCOUNTS_API, JSON.stringify({
-            action: "verify",
-            parameters: {
-                certificate: pullCookie(ACCOUNTS_CERTIFICATE_COOKIE)
-            }
-        }));
+        form = body(ACCOUNTS_API, "verify", {certificate: pullCookie(ACCOUNTS_CERTIFICATE_COOKIE)}, form);
     }
     return form;
 }
