@@ -53,7 +53,7 @@ function accounts()
                 }
                 break;
         }
-        return [true, null];
+        return [false, null];
     }, true);
 }
 
