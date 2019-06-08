@@ -15,20 +15,10 @@ function animate(v, from, to, seconds, property, callback = null) {
     };
 }
 
-function api(endpoint = null, api = null, action = null, parameters = null, callback = null, body = new FormData()) {
-    if (api !== null) {
-        let content = {};
-        if (action !== null) {
-            content.action = action;
-            if (parameters !== null) {
-                content.parameters = parameters;
-            }
-        }
-        body.append(api, JSON.stringify(content));
-    }
+function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
     fetch(endpoint, {
         method: "post",
-        body: body
+        body: body(api, action, parameters, form)
     }).then(response => {
         response.text().then((result) => {
             if (callback !== null && api !== null && action !== null) {
@@ -53,6 +43,16 @@ function api(endpoint = null, api = null, action = null, parameters = null, call
             }
         });
     });
+}
+
+function body(api = null, action = null, parameters = null, form = new FormData()) {
+    if (api !== null && action !== null && parameters !== null && !form.has(api)) {
+        form.append(api, JSON.stringify({
+            action: action,
+            parameters: parameters
+        }));
+    }
+    return form;
 }
 
 function clear(v) {

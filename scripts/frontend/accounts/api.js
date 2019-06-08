@@ -4,11 +4,11 @@ const ACCOUNTS_STARTPOINT = document.getElementsByName("startpoint")[0].getAttri
 const ACCOUNTS_API = "accounts";
 let success, failure;
 
-function accounts(callback) {
+function accounts(callback = null) {
     if (exists("accounts")) view("accounts");
     success = (loggedIn = false) => {
         if (exists("accounts")) hide("accounts");
-        callback(loggedIn);
+        if (callback !== null) callback(loggedIn);
     };
     failure = () => {
         if (exists("accounts") && exists("login")) {
@@ -30,7 +30,7 @@ function accounts(callback) {
 
 function fillForm(form = new FormData()) {
     if (hasCookie(ACCOUNTS_CERTIFICATE_COOKIE)) {
-        form.append("accounts", JSON.stringify({
+        form.append(ACCOUNTS_API, JSON.stringify({
             action: "verify",
             parameters: {
                 certificate: pullCookie(ACCOUNTS_CERTIFICATE_COOKIE)
@@ -54,8 +54,8 @@ function login(name, password) {
         password: password
     }, (success, result, error) => {
         if (success) {
-                pushCookie(ACCOUNTS_CERTIFICATE_COOKIE, result);
-                window.location.reload();
+            pushCookie(ACCOUNTS_CERTIFICATE_COOKIE, result);
+            window.location.reload();
         } else {
             get("login-error").innerText = error;
         }
@@ -97,7 +97,7 @@ function register(name, password) {
 }
 
 function verify(success, failure) {
-    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", undefined, (status) => {
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", null, (status) => {
         if (status) {
             success(true);
         } else {
