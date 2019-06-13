@@ -8,6 +8,7 @@
       "needle": "AppName",
       "haystacks": [
         "index.html",
+        "layouts/template.html",
         "resources/manifest.json"
       ]
     },
@@ -18,6 +19,7 @@
       "needle": "AppDescription",
       "haystacks": [
         "index.html",
+        "layouts/template.html",
         "resources/manifest.json"
       ]
     },
@@ -28,6 +30,7 @@
       "needle": "#FFFFFF",
       "haystacks": [
         "index.html",
+        "layouts/template.html",
         "resources/manifest.json",
         "resources/offline.html",
         "stylesheets/app.css"
