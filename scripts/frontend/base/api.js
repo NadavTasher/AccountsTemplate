@@ -54,6 +54,36 @@ function api(endpoint = null, api = null, action = null, parameters = null, call
     });
 }
 
+function apply(configurations, target = null) {
+    if (isObject(configurations)) {
+        if (target === null) {
+            for (let id in configurations) {
+                if (configurations.hasOwnProperty(id) && exists(id)) apply(configurations[id], get(id));
+            }
+        } else {
+            target = get(target);
+            if (!isString(target)) {
+                if (target !== null) {
+                    for (let property in configurations) {
+                        if (configurations.hasOwnProperty(property)) {
+                            if (isObject(configurations[property])) {
+                                if ((target.hasAttribute !== undefined && !target.hasAttribute(property)) || (target.hasAttribute === undefined && !target.hasOwnProperty(property))) target[property] = {};
+                                apply(configurations[property], target[property]);
+                            } else {
+                                target[property] = configurations[property];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else if (isArray(configurations)) {
+        for (let c = 0; c < configurations.length; c++) {
+            apply(configurations[c], target);
+        }
+    }
+}
+
 function body(api = null, action = null, parameters = null, form = new FormData()) {
     if (api !== null && action !== null && parameters !== null && !form.has(api)) {
         form.append(api, JSON.stringify({
@@ -83,7 +113,7 @@ function exists(v) {
 }
 
 function get(v) {
-    return (typeof "" === typeof v || typeof '' === typeof v) ? document.getElementById(v) : v;
+    return isString(v) ? document.getElementById(v) : v;
 }
 
 function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
@@ -148,6 +178,33 @@ function html(callback = null) {
             });
         });
     });
+}
+
+function isArray(a) {
+    return a instanceof Array;
+}
+
+function isObject(o) {
+    return o instanceof Object && !isArray(o);
+}
+
+function isString(s) {
+    return (typeof "" === typeof s || typeof '' === typeof s);
+}
+
+function make(type, content = null, configurations = null) {
+    let made = document.createElement(type);
+    if (content !== null) {
+        if (!isString(content)) {
+            made.appendChild(content);
+        } else {
+            made.innerText = content;
+        }
+    }
+    if (configurations !== null) {
+        apply(configurations, made);
+    }
+    return made;
 }
 
 function show(v) {
