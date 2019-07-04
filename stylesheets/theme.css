@@ -50,6 +50,7 @@ a, p, input, select, option, button, textarea {
     padding: 1vh;
     /* Alignment */
     justify-content: center;
+    justify-items: center;
     align-content: center;
     align-items: center;
     /* Shaping */
@@ -58,17 +59,18 @@ a, p, input, select, option, button, textarea {
 }
 
 input, select, option, button, textarea {
+    transition-duration: 0.2s;
     background-color: #ddddee;
 }
 
-div > *, body > * {
-    align-self: center;
-    width: 100%;
+input:hover, select:hover, option:hover, button:hover, textarea:hover {
+    background-color: #aaaabb;
 }
 
 div {
     /* Alignment */
-    justify-content: space-between;
+    justify-content: center;
+    align-content: center;
     /* Positioning */
     margin: 0;
     padding: 0;
