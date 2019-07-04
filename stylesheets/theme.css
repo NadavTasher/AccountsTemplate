@@ -11,6 +11,9 @@ html {
     flex-direction: column;
     /* Alignment */
     justify-content: center;
+    justify-items: center;
+    align-content: center;
+    align-items: center;
     /* Positioning */
     position: fixed;
     top: 0;
@@ -20,6 +23,8 @@ html {
 }
 
 body {
+    /* Sizing */
+    width: 100%;
     /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -67,7 +72,7 @@ input:hover, select:hover, option:hover, button:hover, textarea:hover {
     background-color: #aaaabb;
 }
 
-div {
+div, body {
     /* Alignment */
     justify-content: center;
     align-content: center;
