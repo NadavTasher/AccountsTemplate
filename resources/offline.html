@@ -15,11 +15,28 @@
     <noscript></noscript>
     <style>
         html {
+            /* Overflow */
             overflow-x: hidden;
-            height: 100%;
+            /* Flex */
+            display: flex;
+            flex-direction: column;
+            /* Alignment */
+            justify-content: center;
+            justify-items: center;
+            align-content: center;
+            align-items: center;
+            /* Positioning */
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
         }
 
         body {
+            /* Sizing */
+            width: 100%;
+            /* Background */
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -29,59 +46,65 @@
             background-color: #FFFFFF;
         }
 
-        body > div {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            position: absolute;
-            top: 0;
-            bottom: 0;
-        }
-
-        html, body {
-            display: flex;
-            flex-direction: row;
-            justify-content: center;
-        }
-
-        div, form {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-self: center;
-            align-items: center;
-            min-height: fit-content;
-            width: 100%;
-        }
-
-        a, p, input, select, option, button, table, textarea {
+        a, p, input, select, option, button, textarea, body, div {
+            /* WebKit */
             -webkit-appearance: none;
-            align-self: stretch;
+            /* Display */
+            display: flex;
+            flex-direction: column;
+            /* Text */
+            color: black;
+            font-size: large;
             font-family: Arial, ArialHebrew, sans-serif;
-            font-size: x-large;
-            color: #000;
+            /* Text Alignment */
+            text-align: center;
+            text-align-last: center;
+        }
+
+        a, p, input, select, option, button, textarea {
+            /* Positioning */
             margin: 1vh;
             padding: 1vh;
-        }
-
-        a, p, input, select, option, button, table {
-            text-align-last: center;
-            text-align: center;
+            /* Alignment */
+            justify-content: center;
+            justify-items: center;
+            align-content: center;
+            align-items: center;
+            /* Shaping */
+            border-radius: 1vh;
+            border-color: transparent;
         }
 
         input, select, option, button, textarea {
-            transition-duration: 0.4s;
+            transition-duration: 0.2s;
             background-color: #ddddee;
-            border-radius: 1vh;
-            border-color: transparent;
-            color: #333;
         }
 
         input:hover, select:hover, option:hover, button:hover, textarea:hover {
-            background-color: #bbbbcc;
+            background-color: #aaaabb;
+        }
+
+        div, body {
+            /* Alignment */
+            justify-content: center;
+            align-content: center;
+            /* Positioning */
+            margin: 0;
+            padding: 0;
+        }
+
+        p {
+            flex-flow: wrap;
+            height: auto;
+        }
+
+        textarea {
+            text-align: left !important;
+            text-align-last: left !important;
         }
 
         /* App Style */
+
     </style>
 </head>
 <body>
