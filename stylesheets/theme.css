@@ -34,7 +34,12 @@ body {
     background-repeat: no-repeat;
 }
 
-a, p, input, select, option, button, textarea, body, div {
+textarea {
+    text-align: left !important;
+    text-align-last: left !important;
+}
+
+[t], [i], [r], [c] {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -49,7 +54,7 @@ a, p, input, select, option, button, textarea, body, div {
     text-align-last: center;
 }
 
-a, p, input, select, option, button, textarea {
+[t], [i] {
     /* Positioning */
     margin: 1vh;
     padding: 1vh;
@@ -63,16 +68,16 @@ a, p, input, select, option, button, textarea {
     border-color: transparent;
 }
 
-input, select, option, button, textarea {
+[i] {
     transition-duration: 0.2s;
     background-color: #ddddee;
 }
 
-input:hover, select:hover, option:hover, button:hover, textarea:hover {
+[i]:hover {
     background-color: #aaaabb;
 }
 
-div, body {
+[r], [c] {
     /* Alignment */
     justify-content: center;
     align-content: center;
@@ -81,12 +86,21 @@ div, body {
     padding: 0;
 }
 
-p {
-    flex-flow: wrap;
-    height: auto;
+[c] {
+    /* Flex */
+    flex-direction: column;
+    /* Alignment */
+    align-items: stretch;
 }
 
-textarea {
-    text-align: left !important;
-    text-align-last: left !important;
+[r] {
+    /* Flex */
+    flex-direction: row;
+    /* Alignment */
+    align-items: center;
+}
+
+[t] {
+    flex-flow: wrap;
+    height: auto;
 }
