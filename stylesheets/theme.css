@@ -39,7 +39,7 @@ textarea {
     text-align-last: left !important;
 }
 
-[t], [i], [r], [c] {
+[text], a, p, [input], button, input, select, textarea, [row], [column], div, body {
     /* WebKit */
     -webkit-appearance: none;
     /* Display */
@@ -54,7 +54,12 @@ textarea {
     text-align-last: center;
 }
 
-[t], [i] {
+[text], a, p {
+    flex-flow: wrap;
+    height: auto;
+}
+
+[text], a, p, [input], button, input, select, textarea {
     /* Positioning */
     margin: 1vh;
     padding: 1vh;
@@ -68,16 +73,16 @@ textarea {
     border-color: transparent;
 }
 
-[i] {
+[input], button, input, select, textarea {
     transition-duration: 0.2s;
     background-color: #ddddee;
 }
 
-[i]:hover {
+[input]:hover, button:hover, input:hover, select:hover, textarea:hover {
     background-color: #aaaabb;
 }
 
-[r], [c] {
+[row], [column], div, body {
     /* Alignment */
     justify-content: center;
     align-content: center;
@@ -86,21 +91,16 @@ textarea {
     padding: 0;
 }
 
-[c] {
+[column] {
     /* Flex */
     flex-direction: column;
     /* Alignment */
     align-items: stretch;
 }
 
-[r] {
+[row] {
     /* Flex */
     flex-direction: row;
     /* Alignment */
     align-items: center;
-}
-
-[t] {
-    flex-flow: wrap;
-    height: auto;
 }

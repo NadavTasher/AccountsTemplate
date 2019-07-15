@@ -6,7 +6,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, minimal-ui"/>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, minimal-ui"/>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#FFFFFF"/>
     <link rel="icon"
@@ -46,7 +47,12 @@
             background-color: #FFFFFF;
         }
 
-        a, p, input, select, option, button, textarea, body, div {
+        textarea {
+            text-align: left !important;
+            text-align-last: left !important;
+        }
+
+        [text], a, p, [input], button, input, select, textarea, [row], [column], div, body {
             /* WebKit */
             -webkit-appearance: none;
             /* Display */
@@ -61,7 +67,12 @@
             text-align-last: center;
         }
 
-        a, p, input, select, option, button, textarea {
+        [text], a, p {
+            flex-flow: wrap;
+            height: auto;
+        }
+
+        [text], a, p, [input], button, input, select, textarea {
             /* Positioning */
             margin: 1vh;
             padding: 1vh;
@@ -75,16 +86,16 @@
             border-color: transparent;
         }
 
-        input, select, option, button, textarea {
+        [input], button, input, select, textarea {
             transition-duration: 0.2s;
             background-color: #ddddee;
         }
 
-        input:hover, select:hover, option:hover, button:hover, textarea:hover {
+        [input]:hover, button:hover, input:hover, select:hover, textarea:hover {
             background-color: #aaaabb;
         }
 
-        div, body {
+        [row], [column], div, body {
             /* Alignment */
             justify-content: center;
             align-content: center;
@@ -93,24 +104,26 @@
             padding: 0;
         }
 
-        p {
-            flex-flow: wrap;
-            height: auto;
+        [column] {
+            /* Flex */
+            flex-direction: column;
+            /* Alignment */
+            align-items: stretch;
         }
 
-        textarea {
-            text-align: left !important;
-            text-align-last: left !important;
+        [row] {
+            /* Flex */
+            flex-direction: row;
+            /* Alignment */
+            align-items: center;
         }
 
         /* App Style */
 
     </style>
 </head>
-<body>
-<div>
-    <p>You are offline.</p>
-    <button onclick="window.location.reload(true)">Reload</button>
-</div>
+<body column>
+<p>You are offline.</p>
+<button onclick="window.location.reload(true)">Reload</button>
 </body>
 </html>
