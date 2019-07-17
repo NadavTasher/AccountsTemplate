@@ -3,33 +3,7 @@
  * https://github.com/NadavTasher/WebAppBase/
  **/
 
-const LEFT = false;
-const RIGHT = !LEFT;
-const IN = true;
-const OUT = !IN;
-
-function animate(v, parameters, callback = null) {
-    let view = get(v);
-    let removeStyles = () => {
-        view.style.removeProperty("position");
-        view.style.removeProperty("transitionDuration");
-        view.style.removeProperty("transitionTimingFunction");
-        view.style.removeProperty(parameters.name);
-    };
-    removeStyles();
-    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
-        view.style.position = "relative";
-    view.style.transitionDuration = parameters.length + "s";
-    view.style.transitionTimingFunction = "ease";
-    view.style[parameters.name] = parameters.origin;
-    setTimeout(() => {
-        view.style[parameters.name] = parameters.destination;
-        setTimeout(() => {
-            if (!parameters.preserve) removeStyles();
-            if (callback !== null) callback();
-        }, parameters.length * 1000);
-    }, 100 + parameters.delay * 1000);
-}
+/* API */
 
 function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
     fetch(endpoint, {
@@ -61,36 +35,6 @@ function api(endpoint = null, api = null, action = null, parameters = null, call
     });
 }
 
-function apply(configurations, target = null) {
-    if (isObject(configurations)) {
-        if (target === null) {
-            for (let id in configurations) {
-                if (configurations.hasOwnProperty(id) && exists(id)) apply(configurations[id], get(id));
-            }
-        } else {
-            target = get(target);
-            if (!isString(target)) {
-                if (target !== null) {
-                    for (let property in configurations) {
-                        if (configurations.hasOwnProperty(property)) {
-                            if (isObject(configurations[property])) {
-                                if ((target.hasAttribute !== undefined && !target.hasAttribute(property)) || (target.hasAttribute === undefined && !target.hasOwnProperty(property))) target[property] = {};
-                                apply(configurations[property], target[property]);
-                            } else {
-                                target[property] = configurations[property];
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } else if (isArray(configurations)) {
-        for (let c = 0; c < configurations.length; c++) {
-            apply(configurations[c], target);
-        }
-    }
-}
-
 function body(api = null, action = null, parameters = null, form = new FormData()) {
     if (api !== null && action !== null && parameters !== null && !form.has(api)) {
         form.append(api, JSON.stringify({
@@ -101,73 +45,11 @@ function body(api = null, action = null, parameters = null, form = new FormData(
     return form;
 }
 
-function clear(v) {
-    let view = get(v);
-    while (view.firstChild) {
-        view.removeChild(view.firstChild);
-    }
-}
-
 function download(file, data, type = "text/plain", encoding = "utf8") {
     let link = document.createElement("a");
     link.download = file;
     link.href = "data:" + type + ";" + encoding + "," + data;
     link.click();
-}
-
-function exists(v) {
-    return get(v) !== undefined;
-}
-
-function get(v) {
-    return isString(v) ? document.getElementById(v) : v;
-}
-
-function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
-    let touchX, touchY, deltaX, deltaY;
-    document.ontouchstart = (event) => {
-        touchX = event.touches[0].clientX;
-        touchY = event.touches[0].clientY;
-    };
-    document.ontouchmove = (event) => {
-        deltaX = touchX - event.touches[0].clientX;
-        deltaY = touchY - event.touches[0].clientY;
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                if (leftgoing !== null) leftgoing();
-            } else {
-                if (rightgoing !== null) rightgoing();
-            }
-        } else {
-            if (deltaY > 0) {
-                if (upgoing !== null) upgoing();
-            } else {
-                if (downgoing !== null) downgoing();
-            }
-        }
-
-    };
-    document.ontouchend = () => {
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-            if (deltaX > 0) {
-                if (left !== null) left();
-            } else {
-                if (right !== null) right();
-            }
-        } else {
-            if (deltaY > 0) {
-                if (up !== null) up();
-            } else {
-                if (down !== null) down();
-            }
-        }
-        touchX = null;
-        touchY = null;
-    };
-}
-
-function hide(v) {
-    get(v).style.display = "none";
 }
 
 function html(callback = null) {
@@ -187,16 +69,111 @@ function html(callback = null) {
     });
 }
 
-function isArray(a) {
-    return a instanceof Array;
+function theme(color) {
+    let meta = document.getElementsByTagName("meta")["theme-color"];
+    if (meta !== null) {
+        meta.content = color;
+    } else {
+        meta = document.createElement("meta");
+        meta.name = "theme-color";
+        meta.content = color;
+        document.head.appendChild(meta);
+    }
+
 }
 
-function isObject(o) {
-    return o instanceof Object && !isArray(o);
+function title(title) {
+    document.title = title;
 }
 
-function isString(s) {
-    return (typeof "" === typeof s || typeof '' === typeof s);
+function worker(w = "worker.js") {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(w).then((result) => {
+        });
+    }
+}
+
+/* Visuals */
+
+const LEFT = false;
+const RIGHT = !LEFT;
+const IN = true;
+const OUT = !IN;
+
+function animate(v, parameters, callback = null) {
+    let view = get(v);
+    let removeStyles = () => {
+        view.style.removeProperty("position");
+        view.style.removeProperty("transitionDuration");
+        view.style.removeProperty("transitionTimingFunction");
+        view.style.removeProperty(parameters.name);
+    };
+    removeStyles();
+    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
+        view.style.position = "relative";
+    view.style.transitionDuration = parameters.length + "s";
+    view.style.transitionTimingFunction = "ease";
+    view.style[parameters.name] = parameters.origin;
+    setTimeout(() => {
+        view.style[parameters.name] = parameters.destination;
+        setTimeout(() => {
+            if (!parameters.preserve) removeStyles();
+            if (callback !== null) callback();
+        }, parameters.length * 1000);
+    }, 100 + parameters.delay * 1000);
+}
+
+function apply(configurations, target = null) {
+    if (isObject(configurations)) {
+        if (target === null) {
+            for (let id in configurations) {
+                if (configurations.hasOwnProperty(id) && exists(id)) apply(configurations[id], get(id));
+            }
+        } else {
+            target = get(target);
+            if (!isString(target)) {
+                if (target !== null) {
+                    for (let property in configurations) {
+                        if (configurations.hasOwnProperty(property)) {
+                            if (isObject(configurations[property])) {
+                                if ((target.hasAttribute !== undefined && !target.hasAttribute(property)) || (target.hasAttribute === undefined && !target.hasOwnProperty(property))) target[property] = {};
+                                apply(configurations[property], target[property]);
+                            } else {
+                                if (target.setAttribute !== undefined) {
+                                    target.setAttribute(property, configurations[property]);
+                                } else {
+                                    target[property] = configurations[property];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    } else if (isArray(configurations)) {
+        for (let c = 0; c < configurations.length; c++) {
+            apply(configurations[c], target);
+        }
+    }
+}
+
+function clear(v) {
+    let view = get(v);
+    while (view.firstChild) {
+        view.removeChild(view.firstChild);
+    }
+}
+
+function exists(v) {
+    return get(v) !== undefined;
+}
+
+function get(v) {
+    return isString(v) ? document.getElementById(v) : v;
+}
+
+function hide(v) {
+    get(v).style.display = "none";
 }
 
 function make(type, content = null, configurations = null) {
@@ -247,23 +224,6 @@ function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callb
     }, callback);
 }
 
-function theme(color) {
-    let meta = document.getElementsByTagName("meta")["theme-color"];
-    if (meta !== null) {
-        meta.content = color;
-    } else {
-        meta = document.createElement("meta");
-        meta.name = "theme-color";
-        meta.content = color;
-        document.head.appendChild(meta);
-    }
-
-}
-
-function title(title) {
-    document.title = title;
-}
-
 function transition(v, type = OUT, callback = null) {
     let element = get(v);
     for (let n = 0; n < element.children.length; n++) {
@@ -284,9 +244,69 @@ function visible(v) {
     return (get(v).style.getPropertyValue("display") !== "none");
 }
 
-function worker(w = "worker.js") {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register(w).then((result) => {
-        });
-    }
+/* UI */
+
+function gestures(up = null, down = null, left = null, right = null, upgoing = null, downgoing = null, leftgoing = null, rightgoing = null) {
+    let touchX, touchY, deltaX, deltaY;
+    document.ontouchstart = (event) => {
+        touchX = event.touches[0].clientX;
+        touchY = event.touches[0].clientY;
+    };
+    document.ontouchmove = (event) => {
+        deltaX = touchX - event.touches[0].clientX;
+        deltaY = touchY - event.touches[0].clientY;
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0) {
+                if (leftgoing !== null) leftgoing();
+            } else {
+                if (rightgoing !== null) rightgoing();
+            }
+        } else {
+            if (deltaY > 0) {
+                if (upgoing !== null) upgoing();
+            } else {
+                if (downgoing !== null) downgoing();
+            }
+        }
+
+    };
+    document.ontouchend = () => {
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX > 0) {
+                if (left !== null) left();
+            } else {
+                if (right !== null) right();
+            }
+        } else {
+            if (deltaY > 0) {
+                if (up !== null) up();
+            } else {
+                if (down !== null) down();
+            }
+        }
+        touchX = null;
+        touchY = null;
+    };
 }
+
+/* Utils */
+
+function isArray(a) {
+    return a instanceof Array;
+}
+
+function isObject(o) {
+    return o instanceof Object && !isArray(o);
+}
+
+function isString(s) {
+    return (typeof "" === typeof s || typeof '' === typeof s);
+}
+
+
+
+
+
+
+
+
