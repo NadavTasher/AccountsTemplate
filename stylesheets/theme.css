@@ -29,6 +29,7 @@ html {
 body {
     /* Sizing */
     width: 100%;
+    max-width: 460px;
     /* Background */
     -webkit-background-size: cover;
     -moz-background-size: cover;
