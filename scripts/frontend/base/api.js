@@ -123,46 +123,13 @@ function animate(v, parameters, callback = null) {
     }, 100 + parameters.delay * 1000);
 }
 
-function apply(configurations, target = null) {
-    if (isObject(configurations)) {
-        if (target === null) {
-            for (let id in configurations) {
-                if (configurations.hasOwnProperty(id) && exists(id)) apply(configurations[id], get(id));
-            }
-        } else {
-            target = get(target);
-            if (!isString(target)) {
-                if (target !== null) {
-                    for (let property in configurations) {
-                        if (configurations.hasOwnProperty(property)) {
-                            if (isObject(configurations[property])) {
-                                if ((target.hasAttribute !== undefined && !target.hasAttribute(property)) || (target.hasAttribute === undefined && !target.hasOwnProperty(property))) target[property] = {};
-                                apply(configurations[property], target[property]);
-                            } else {
-                                if (target.setAttribute !== undefined) {
-                                    target.setAttribute(property, configurations[property]);
-                                } else {
-                                    target[property] = configurations[property];
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    } else if (isArray(configurations)) {
-        for (let c = 0; c < configurations.length; c++) {
-            apply(configurations[c], target);
-        }
-    }
-}
-
 function clear(v) {
     let view = get(v);
     while (view.firstChild) {
         view.removeChild(view.firstChild);
     }
 }
+
 
 function exists(v) {
     return get(v) !== undefined;
@@ -176,7 +143,7 @@ function hide(v) {
     get(v).style.display = "none";
 }
 
-function make(type, content = null, configurations = null) {
+function make(type, content = null, classes = []) {
     let made = document.createElement(type);
     if (content !== null) {
         if (!isString(content)) {
@@ -185,9 +152,8 @@ function make(type, content = null, configurations = null) {
             made.innerText = content;
         }
     }
-    if (configurations !== null) {
-        apply(configurations, made);
-    }
+    for (let c = 0; c < classes.length; c++)
+        made.classList.add(classes[c]);
     return made;
 }
 
@@ -242,6 +208,26 @@ function view(v) {
 
 function visible(v) {
     return (get(v).style.getPropertyValue("display") !== "none");
+}
+
+/* Special HTML */
+
+function column(v) {
+    get(v).setAttribute("column", true);
+    get(v).setAttribute("row", false);
+}
+
+function input(v) {
+    get(v).setAttribute("input", true);
+}
+
+function row(v) {
+    get(v).setAttribute("row", true);
+    get(v).setAttribute("column", false);
+}
+
+function text(v) {
+    get(v).setAttribute("text", true);
 }
 
 /* UI */
