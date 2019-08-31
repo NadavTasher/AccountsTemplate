@@ -153,27 +153,30 @@ const RIGHT = !LEFT;
 const IN = true;
 const OUT = !IN;
 
-function animate(v, parameters, callback = null) {
+function animate(v, property = "left", origin = "0px", destination = "0px", length = 1, delay = 0, preserve = true, callback = null) {
     let view = get(v);
     let removeStyles = () => {
         view.style.removeProperty("position");
         view.style.removeProperty("transitionDuration");
         view.style.removeProperty("transitionTimingFunction");
-        view.style.removeProperty(parameters.name);
+        view.style.removeProperty(property);
     };
     removeStyles();
-    if (getComputedStyle(view).position === "static" || getComputedStyle(view).position === "sticky")
+    if (getComputedStyle(view).position === "static" ||
+        getComputedStyle(view).position === "sticky")
         view.style.position = "relative";
-    view.style.transitionDuration = parameters.length + "s";
+    view.style.transitionDuration = length + "s";
     view.style.transitionTimingFunction = "ease";
-    view.style[parameters.name] = parameters.origin;
+    view.style[property] = origin;
     setTimeout(() => {
-        view.style[parameters.name] = parameters.destination;
+        view.style[property] = destination;
         setTimeout(() => {
-            if (!parameters.preserve) removeStyles();
-            if (callback !== null) callback();
-        }, parameters.length * 1000);
-    }, 100 + parameters.delay * 1000);
+            if (!preserve)
+                removeStyles();
+            if (callback !== null)
+                callback();
+        }, length * 1000);
+    }, 100 + delay * 1000);
 }
 
 function clear(v) {
@@ -232,14 +235,7 @@ function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callb
     let current = isNaN(parseInt(style.left)) ? 0 : parseInt(style.left);
     let origin = current === 0 && motion === IN ? edge : current;
     let destination = motion === IN ? 0 : edge;
-    animate(view, {
-        name: "left",
-        origin: origin + "px",
-        destination: destination + "px",
-        length: length,
-        delay: delay,
-        preserve: true
-    }, callback);
+    animate(view, "left", origin + "px", destination + "px", length, delay, true, callback);
 }
 
 function transition(v, type = OUT, callback = null) {
