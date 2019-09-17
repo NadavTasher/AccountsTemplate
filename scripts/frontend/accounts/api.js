@@ -100,8 +100,8 @@ function accounts_register(name, password) {
 }
 
 function accounts_verify(success, failure) {
-    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", {}, (success, result, error) => {
-        if (success) {
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", {}, (state, result, error) => {
+        if (state) {
             success(true, result);
         } else {
             failure();
