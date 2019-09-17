@@ -38,7 +38,9 @@ function accounts(callback = null) {
 
 function accounts_fill(form = body()) {
     if (accounts_cookie_has(ACCOUNTS_CERTIFICATE_COOKIE)) {
-        form = body(ACCOUNTS_API, "verify", {certificate: accounts_cookie_pull(ACCOUNTS_CERTIFICATE_COOKIE)}, form);
+        form = body(ACCOUNTS_API, "verify", {
+            certificate: accounts_cookie_pull(ACCOUNTS_CERTIFICATE_COOKIE)
+        }, form);
     }
     return form;
 }
@@ -100,7 +102,8 @@ function accounts_register(name, password) {
 }
 
 function accounts_verify(success, failure) {
-    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", {}, (state, result, error) => {
+    api(ACCOUNTS_ENDPOINT, ACCOUNTS_API, "verify", {
+    }, (state, result, error) => {
         if (state) {
             success(true, result);
         } else {
