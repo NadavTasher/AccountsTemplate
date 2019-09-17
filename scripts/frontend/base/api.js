@@ -213,15 +213,22 @@ function make(type, content = null, classes = []) {
 }
 
 function page(from, to, callback = null) {
-    transition(from, OUT, () => {
+    let stepA = () => {
+        slide(get(from), OUT, LEFT, 0.2, 0, stepB);
+    };
+    let stepB = () => {
         let temporary = get(to);
-        while (temporary.parentNode !== get(from).parentNode && temporary.parentNode !== document.body) {
+        while (temporary.parentNode !== document.body && temporary.parentNode !== document.body) {
             view(temporary);
             temporary = temporary.parentNode;
         }
         view(temporary);
-        transition(to, IN, callback);
-    });
+        slide(temporary, IN, RIGHT, 0.2, 0, callback);
+    };
+    if (from === null)
+        stepB();
+    else
+        stepA();
 }
 
 function show(v) {
@@ -236,13 +243,6 @@ function slide(v, motion = IN, direction = RIGHT, length = 0.2, delay = 0, callb
     let origin = current === 0 && motion === IN ? edge : current;
     let destination = motion === IN ? 0 : edge;
     animate(view, "left", origin + "px", destination + "px", length, delay, true, callback);
-}
-
-function transition(v, type = OUT, callback = null) {
-    let element = get(v);
-    for (let n = 0; n < element.children.length; n++) {
-        slide(element.children[n], type, RIGHT, 0.4, 0.2 * n, n === element.children.length - 1 ? callback : null);
-    }
 }
 
 function view(v) {
