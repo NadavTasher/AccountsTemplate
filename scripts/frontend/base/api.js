@@ -214,7 +214,7 @@ function make(type, content = null, classes = []) {
 
 function page(from, to, callback = null) {
     let stepA = () => {
-        slide(get(from), OUT, LEFT, 0.2, 0, stepB);
+        slide(get(from), OUT, LEFT, 0.2, stepB);
     };
     let stepB = () => {
         let temporary = get(to);
@@ -223,7 +223,7 @@ function page(from, to, callback = null) {
             temporary = temporary.parentNode;
         }
         view(temporary);
-        slide(temporary, IN, RIGHT, 0.2, 0, callback);
+        slide(temporary, IN, RIGHT, 0.2, callback);
     };
     if (from === null)
         stepB();
