@@ -3,10 +3,6 @@
  * https://github.com/NadavTasher/WebAppBase/
  **/
 
-// Code to be ran before load
-
-prepare();
-
 /* API */
 
 function api(endpoint = null, api = null, action = null, parameters = null, callback = null, form = body()) {
@@ -80,7 +76,7 @@ function instruct(title = null) {
     }
 }
 
-function prepare() {
+function prepare(callback = null) {
     // Register worker
     if ("serviceWorker" in navigator)
         navigator.serviceWorker.register("worker.js").then();
@@ -94,40 +90,12 @@ function prepare() {
             }).then(response => {
                 response.text().then((app) => {
                     document.body.innerHTML = template.replace("<!--App Body-->", app);
+                    if (callback !== null)
+                        callback()
                 });
             });
         });
     });
-    // Register popstate
-    addEventListener("popstate", (result) => {
-        if (result.state !== null) {
-            restore(result.state);
-        } else {
-            history.go(-1);
-        }
-    });
-}
-
-/* History */
-
-function preserve(element = document.body) {
-    let state = [];
-    for (let i = 0; i < element.children.length; i++) {
-        state.push({
-            style: element.children[i].style.cssText,
-            children: preserve(element.children[i])
-        });
-    }
-    return state;
-}
-
-function restore(state, element = document.body) {
-    for (let i = 0; i < element.children.length; i++) {
-        if (state.length > i) {
-            element.children[i].style.cssText = state[i].style;
-            restore(state[i].children, element.children[i]);
-        }
-    }
 }
 
 /* Visuals */
@@ -232,12 +200,7 @@ function page(from, to, callback = null) {
             temporary = temporary.parentNode;
         }
         view(temporary);
-        slide(temporary, IN, RIGHT, 0.2, () => {
-            history.pushState(preserve(), null);
-            if (callback !== null) {
-                callback();
-            }
-        });
+        slide(temporary, IN, RIGHT, 0.2, callback);
     };
     if (from === null)
         stepB();
