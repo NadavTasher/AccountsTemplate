@@ -45,6 +45,43 @@ function body(api = null, action = null, parameters = null, form = new FormData(
     return form;
 }
 
+function popup(contents, color = null, timeout = 2000, onclick = null) {
+    let div = make("div");
+    // Make the prompt horizontal and button-like
+    row(div);
+    input(div);
+    // OnClick
+    div.onclick = (onclick !== null) ? onclick : () => {
+        div.onclick = null;
+        animate(div, "opacity", ["1", "0"], 0.5, () => {
+            div.parentElement.removeChild(div);
+        });
+    };
+    // Style
+    div.style.position = "fixed";
+    div.style.bottom = "0";
+    div.style.left = "0";
+    div.style.right = "0";
+    div.style.margin = "1vh";
+    div.style.padding = "1vh";
+    div.style.height = "6vh";
+    if (color !== null)
+        div.style.backgroundColor = color;
+    // Contents
+    div.innerHTML = contents.innerHTML;
+    // Animate
+    animate(div, "opacity", ["0", "1"], 0.5, () => {
+        if (timeout > 0) {
+            setTimeout(() => {
+                if (div.onclick !== null)
+                    div.onclick(null);
+            }, timeout);
+        }
+    });
+    // Add To Body
+    document.body.appendChild(div);
+}
+
 function download(file, data, type = "text/plain", encoding = "utf8") {
     let link = document.createElement("a");
     link.download = file;
@@ -83,42 +120,21 @@ function instruct(title = null, safaricheck = true, callback = null) {
         let share = make("img");
         let then = make("p");
         let add = make("img");
-        // Make the prompt horizontal and button-like
-        row(div);
-        input(div);
-        // OnClick
-        div.onclick = (callback !== null) ? callback : () => {
-            hide(div);
-            div.parentElement.removeChild(div);
-        };
-        // Div style
-        div.style.position = "fixed";
-        div.style.bottom = "0";
-        div.style.left = "0";
-        div.style.right = "0";
-        div.style.margin = "1vh";
-        div.style.padding = "1vh";
-        div.style.height = "6vh";
-        div.style.backgroundColor = "#ffffffee";
-        // Contents
         text.innerText = "To add " + ((title === null) ? ("\"" + document.title + "\"") : title) + ", ";
         share.src = "resources/svg/icons/safari/share.svg";
         then.innerText = "then";
         add.src = "resources/svg/icons/safari/add.svg";
-        // Indentations
         text.style.fontStyle = "italic";
         then.style.fontStyle = "italic";
-        // Heights
         text.style.maxHeight = "5vh";
         share.style.maxHeight = "4vh";
         then.style.maxHeight = "5vh";
         add.style.maxHeight = "4vh";
-        // Add components
         div.appendChild(text);
         div.appendChild(share);
         div.appendChild(then);
         div.appendChild(add);
-        document.body.appendChild(div);
+        popup(div, "#ffffffee", 0);
     }
 }
 
